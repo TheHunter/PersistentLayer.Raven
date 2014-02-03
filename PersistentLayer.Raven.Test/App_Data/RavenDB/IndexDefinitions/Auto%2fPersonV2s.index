@@ -1,0 +1,22 @@
+{
+  "Name": "Auto/PersonV2s",
+  "LockMode": "Unlock",
+  "Map": "from doc in docs.PersonV2s\r\nselect new {  }",
+  "Maps": [
+    "from doc in docs.PersonV2s\r\nselect new {  }"
+  ],
+  "Reduce": null,
+  "TransformResults": null,
+  "IsMapReduce": false,
+  "IsCompiled": false,
+  "Stores": {},
+  "Indexes": {},
+  "SortOptions": {},
+  "Analyzers": {},
+  "Fields": [],
+  "Suggestions": {},
+  "TermVectors": {},
+  "SpatialIndexes": {},
+  "InternalFieldsMapping": {},
+  "Type": "Auto"
+}
