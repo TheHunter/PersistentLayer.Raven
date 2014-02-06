@@ -53,6 +53,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="PersistentLayer, Version=4.2.1.10, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\PersistentLayer.4.2.1.10\lib\net40\PersistentLayer.dll</HintPath>
+    </Reference>
     <Reference Include="Raven.Abstractions">
       <HintPath>..\packages\RavenDB.Client.2.5.2750\lib\net40\Raven.Abstractions.dll</HintPath>
     </Reference>
@@ -84,6 +88,7 @@
     <Compile Include="Domain\Person.cs" />
     <Compile Include="Domain\PersonV2.cs" />
     <Compile Include="Domain\Student.cs" />
+    <Compile Include="Domain\StudentV2.cs" />
     <Compile Include="PagedDaoTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -92,10 +97,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Visual Studio 2010\Projects\PersistentLayer\PersistentLayer.net40\PersistentLayer.net40.csproj">
-      <Project>{61847a3b-5110-4ac0-a1aa-3443477d1739}</Project>
-      <Name>PersistentLayer.net40</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PersistentLayer.Raven\PersistentLayer.Raven.csproj">
       <Project>{12949629-9e6c-4c18-8726-db0a741e67ac}</Project>
       <Name>PersistentLayer.Raven</Name>
@@ -103,6 +104,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="PersistentLayer.license.txt" />
+    <Content Include="PersistentLayer.readme.html" />
+    <Content Include="Release_Notes.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

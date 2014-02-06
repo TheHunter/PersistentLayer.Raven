@@ -9,8 +9,8 @@ namespace PersistentLayer.Raven
     /// 
     /// </summary>
     public interface IRavenPagedDAO
-        : IPagedDAO, IRavenPersisterDAO
+        : IPagedDAO, IRavenPersisterDAO, IRavenQueryableDAO
     {
-
+        
     }
 }

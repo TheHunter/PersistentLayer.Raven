@@ -278,7 +278,7 @@ namespace PersistentLayer.Raven.Test
         //    //list.Add(this.Accessor.MakePersistent(new Student { Key = "/", Matricola = "011263B" }));  // errore nella generazione della chiave.
         //    //list.Add(this.Accessor.MakePersistent(new Student { Key = "students/", Matricola = "011263B" }));
         //    list.Add(this.Accessor.MakePersistent(new Student { Key = "students/", Matricola = "021263B" }));
-//    //list.Add(this.Accessor.MakePersistent(new Student { Key = "students/", Matricola = "031263B" }));
+        //    //list.Add(this.Accessor.MakePersistent(new Student { Key = "students/", Matricola = "031263B" }));
 
         //    this.Save();
 
@@ -288,20 +288,83 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void TestReflection()
         {
-            
             var converter = TypeDescriptor.GetConverter(typeof (double));
-            var res1 = converter.ConvertFromString("5");
-            var res2 = converter.CanConvertTo(typeof(long));
-            var res3 = converter.IsValid("5");
-
+            
             //Assert.IsTrue(converter.CanConvertTo((100).GetType()));
             //Assert.IsTrue(converter.CanConvertTo((100l).GetType()));
             //Assert.IsTrue(converter.CanConvertTo((100f).GetType()));
             //Assert.IsTrue(converter.CanConvertTo((100d).GetType()));
             //Assert.IsTrue(converter.CanConvertTo(("100").GetType()));
 
-            
+            var converter2 = TypeDescriptor.GetConverter(typeof (int?));
+            Assert.IsTrue(converter2.CanConvertTo(typeof(int)));
 
+            //var converter3 = TypeDescriptor.GetConverter(typeof(int));
+            //Assert.IsTrue(converter3.CanConvertTo(typeof(int?)));
+            int? p = 1;
+            int? q = null;
+
+            var res = converter2.ConvertTo(p, typeof (int));
+            var res1 = converter2.IsValid(q);
+            Assert.IsTrue(true);
+            
+        }
+
+        [Test]
+        public void TestDocStoreInfo()
+        {
+            this.DocStoreInfo.VerifyIdentifier<Person, byte>();
+            this.DocStoreInfo.VerifyIdentifier<Person, short>();
+            this.DocStoreInfo.VerifyIdentifier<Person, int>();
+
+            try
+            {
+                this.DocStoreInfo.VerifyIdentifier<Person, string>();
+                Assert.IsFalse(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(true);
+                
+            }
+
+            try
+            {
+                this.DocStoreInfo.VerifyIdentifier<Person, int?>();
+                Assert.IsFalse(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(true);
+                //throw ex;
+            }
+
+        }
+
+        [Test]
+        public void Test()
+        {
+            //byte b = 1;
+            //short s = 1;
+            //float f = 1;
+            //long l = 1;
+
+            //var converter = TypeDescriptor.GetConverter(typeof (int));
+            //Assert.IsTrue(converter.IsValid(b));
+            //Assert.IsTrue(converter.IsValid(s));
+            //Assert.IsFalse(converter.IsValid((s)));
+            //Assert.IsFalse(converter.IsValid((f)));
+            //Assert.IsFalse(converter.IsValid((l)));
+
+            //int? a = null;
+
+            //if (a == null)
+            //    Console.WriteLine(a.HasValue);
+
+            //if (a.Value != null)
+            //    Console.WriteLine();
+
+            
         }
     }
 }

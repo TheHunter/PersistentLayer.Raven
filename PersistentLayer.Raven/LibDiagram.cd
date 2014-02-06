@@ -3,15 +3,15 @@
   <Class Name="PersistentLayer.Raven.Impl.DocumentStoreInfo">
     <Position X="9.25" Y="1" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAAAAAABAAAIAAAAAAAABAIAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAACAAAAAAAABAAAIAAAAAAAABAIAAAJAAgAA=</HashCode>
       <FileName>Impl\DocumentStoreInfo.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="PersistentLayer.Raven.Impl.RavenEnterpriseDAO">
-    <Position X="3.75" Y="5.75" Width="1.5" />
+    <Position X="5" Y="7.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EAAAAAAAAAAgAQgAAAAQAAAAAAAAIAAAAAEAAEEBACA=</HashCode>
+      <HashCode>EAAAAAAAAAAiAQgAAAAQAAAAAAAAIAAAAAEAAAEBACA=</HashCode>
       <FileName>Impl\RavenEnterpriseDAO.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -64,22 +64,29 @@
   <Interface Name="PersistentLayer.Raven.IDocumentStoreInfo">
     <Position X="7.25" Y="1" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAAAAAABAAAIAAAAAAAAAAIAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAACAAAAAAAABAAAIAAAAAAAAAAIAAABAAAAA=</HashCode>
       <FileName>IDocumentStoreInfo.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="PersistentLayer.Raven.IRavenPersisterDAO">
-    <Position X="1.5" Y="5.75" Width="1.5" />
+    <Position X="2.75" Y="7.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IRavenPersisterDAO.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="PersistentLayer.Raven.IRavenPagedDAO">
-    <Position X="1.5" Y="7.75" Width="1.5" />
+    <Position X="1.5" Y="9.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IRavenPagedDAO.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="PersistentLayer.Raven.IRavenQueryableDAO">
+    <Position X="1.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IRavenQueryableDAO.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />

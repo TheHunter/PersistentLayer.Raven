@@ -18,12 +18,12 @@ namespace PersistentLayer.Raven.Impl
         /// <summary>
         /// 
         /// </summary>
-        /// <exception cref="BusinessLayerException"></exception>
+        /// <exception cref="SessionNotBindedException"></exception>
         /// <returns></returns>
         public IDocumentSession GetCurrentSession()
         {
             if (this.currentSession == null)
-                throw new BusinessLayerException("No IDocumentSession has binded.", "GetCurrentSession");
+                throw new SessionNotBindedException("No IDocumentSession has binded.", "GetCurrentSession");
 
             return this.currentSession;
         }

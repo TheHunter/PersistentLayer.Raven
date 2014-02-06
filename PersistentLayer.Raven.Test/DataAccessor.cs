@@ -23,6 +23,7 @@ namespace PersistentLayer.Raven.Test
         private readonly EmbeddableDocumentStore storeCached;
         private readonly RavenEnterpriseDAO dao;
         private readonly ISessionBinder sessionContext;
+        private readonly IDocumentStoreInfo docStoreInfo;
         private readonly IRavenTransactionProvider transactionProvider;
 
         public DataAccessor()
@@ -47,8 +48,8 @@ namespace PersistentLayer.Raven.Test
             storeCached.Initialize();
             sessionContext = new SessionBinder();
             transactionProvider = new RavenTransactionProvider(sessionContext);
-
-            dao = new RavenEnterpriseDAO(transactionProvider, new DocumentStoreInfo(storeCached));
+            docStoreInfo = new DocumentStoreInfo(storeCached);
+            dao = new RavenEnterpriseDAO(transactionProvider, docStoreInfo);
         }
 
         [TestFixtureSetUp]
@@ -86,6 +87,12 @@ namespace PersistentLayer.Raven.Test
         public IRavenPagedDAO DAO
         {
             get { return this.dao; }
+        }
+
+        public IDocumentStoreInfo DocStoreInfo
+        {
+            //get {return this.IDocumentStoreInfo docStoreInfo}
+            get { return this.docStoreInfo; }
         }
     }
 }

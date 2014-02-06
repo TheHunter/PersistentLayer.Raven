@@ -12,10 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{4F8028
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistentLayer.Raven.Test", "PersistentLayer.Raven.Test\PersistentLayer.Raven.Test.csproj", "{1B78472E-BCE8-4E44-A81B-76B48EBD3FBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistentLayer", "..\..\..\Visual Studio 2010\Projects\PersistentLayer\PersistentLayer\PersistentLayer.csproj", "{44A565D4-921A-4BE0-A412-522404AFBA09}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistentLayer.net40", "..\..\..\Visual Studio 2010\Projects\PersistentLayer\PersistentLayer.net40\PersistentLayer.net40.csproj", "{61847A3B-5110-4AC0-A1AA-3443477D1739}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,14 +26,6 @@ Global
 		{1B78472E-BCE8-4E44-A81B-76B48EBD3FBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B78472E-BCE8-4E44-A81B-76B48EBD3FBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B78472E-BCE8-4E44-A81B-76B48EBD3FBE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{44A565D4-921A-4BE0-A412-522404AFBA09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{44A565D4-921A-4BE0-A412-522404AFBA09}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{44A565D4-921A-4BE0-A412-522404AFBA09}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{44A565D4-921A-4BE0-A412-522404AFBA09}.Release|Any CPU.Build.0 = Release|Any CPU
-		{61847A3B-5110-4AC0-A1AA-3443477D1739}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{61847A3B-5110-4AC0-A1AA-3443477D1739}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{61847A3B-5110-4AC0-A1AA-3443477D1739}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{61847A3B-5110-4AC0-A1AA-3443477D1739}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

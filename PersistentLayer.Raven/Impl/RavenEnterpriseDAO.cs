@@ -10,6 +10,9 @@ using Raven.Client.Linq;
 
 namespace PersistentLayer.Raven.Impl
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class RavenEnterpriseDAO
         : IRavenPagedDAO
     {
@@ -146,27 +149,145 @@ namespace PersistentLayer.Raven.Impl
                        .ToList();
         }
 
-        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="indexName"></param>
+        /// <param name="isMapReduce"></param>
+        /// <returns></returns>
+        public IEnumerable<TEntity> FindAll<TEntity>(string indexName, bool isMapReduce) where TEntity : class
+        {
+            RavenQueryStatistics stats;
+            return this.Session.Query<TEntity>(indexName, isMapReduce)
+                       .Statistics(out stats)
+                       .ToList();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="indexName"></param>
+        /// <param name="isMapReduce"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public IEnumerable<TEntity> FindAll<TEntity>(string indexName, bool isMapReduce, Expression<Func<TEntity, bool>> predicate) where TEntity : class
+        {
+            RavenQueryStatistics stats;
+            return this.Session.Query<TEntity>(indexName, isMapReduce)
+                       .Statistics(out stats)
+                       .Where(predicate)
+                       .ToList();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="identifiers"></param>
+        /// <returns></returns>
+        public IEnumerable<TEntity> FindAll<TEntity, TKey>(IEnumerable<TKey> identifiers) where TEntity : class
+        {
+            if (identifiers == null || !identifiers.Any())
+                throw new QueryArgumentException("Identifiers to load cannot be null or empty", "FindAll", "identifiers");
+
+            return this.LoadDocuments<TEntity, TKey>(identifiers);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="identifiers"></param>
+        /// <returns></returns>
+        public IEnumerable<TEntity> FindAll<TEntity, TKey>(params TKey[] identifiers) where TEntity : class
+        {
+            if (identifiers == null || !identifiers.Any())
+                throw new QueryArgumentException("Identifiers to load cannot be null or empty", "FindAll", "identifiers");
+
+
+            return this.LoadDocuments<TEntity, TKey>(identifiers);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="identifiers"></param>
+        /// <returns></returns>
+        private IEnumerable<TEntity> LoadDocuments<TEntity, TKey>(IEnumerable<TKey> identifiers) where TEntity : class
+        {
+            Type keyType = typeof (TKey);
+
+            if (keyType.IsValueType)
+                return this.Session.Load<TEntity>(identifiers.Cast<ValueType>());
+
+            IEnumerable<string> keys = keyType.Name == "String"
+                                           ? identifiers.Select(
+                                               n => this.storeInfo.MakeDocumentKey<TEntity>(n as string))
+                                           : identifiers.Select(
+                                               n => this.storeInfo.MakeDocumentKey<TEntity>(n.ToString()));
+
+            return this.Session.Load<TEntity>(keys);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public ITransactionProvider GetTransactionProvider()
         {
             return this.transactionProvider;
         }
 
-        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public dynamic MakePersistent(dynamic entity)
+        {
+            this.Session.Store(entity);
+            return entity;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public TEntity MakePersistent<TEntity>(TEntity entity) where TEntity : class
         {
             this.Session.Store(entity);
             return entity;
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="etag"></param>
+        /// <returns></returns>
         public TEntity MakePersistent<TEntity>(TEntity entity, RavenEtag etag) where TEntity : class
         {
             this.Session.Store(entity, etag.Etag);
             return entity;
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
         public TEntity MakePersistent<TEntity, TKey>(TEntity entity, TKey identifier) where TEntity : class
         {
             string key = this.storeInfo.MakeDocumentKey<TEntity>(identifier.ToString());
@@ -174,7 +295,15 @@ namespace PersistentLayer.Raven.Impl
             return entity;
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="identifier"></param>
+        /// <param name="etag"></param>
+        /// <returns></returns>
         public TEntity MakePersistent<TEntity, TKey>(TEntity entity, TKey identifier, RavenEtag etag) where TEntity : class
         {
             string key = this.storeInfo.MakeDocumentKey<TEntity>(identifier.ToString());
@@ -182,7 +311,12 @@ namespace PersistentLayer.Raven.Impl
             return entity;
         }
         
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entities"></param>
+        /// <returns></returns>
         public IEnumerable<TEntity> MakePersistent<TEntity>(IEnumerable<TEntity> entities) where TEntity : class
         {
             if (entities == null || !entities.Any())
@@ -191,13 +325,21 @@ namespace PersistentLayer.Raven.Impl
             return entities.Select(n => this.MakePersistent(n)).ToList();
         }
 
-        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
         public void MakeTransient<TEntity>(TEntity entity) where TEntity : class
         {
             this.Session.Delete(entity);
         }
 
-        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entities"></param>
         public void MakeTransient<TEntity>(IEnumerable<TEntity> entities) where TEntity : class
         {
             if (entities == null || !entities.Any())
@@ -209,7 +351,14 @@ namespace PersistentLayer.Raven.Impl
             }
         }
 
-        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="startIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
         public IPagedResult<TEntity> GetPagedResult<TEntity>(int startIndex, int pageSize, Expression<Func<TEntity, bool>> predicate) where TEntity : class
         {
             RavenQueryStatistics stats;
@@ -223,35 +372,5 @@ namespace PersistentLayer.Raven.Impl
             return new PagedResult<TEntity>(startIndex, pageSize, stats.TotalResults, result);
         }
 
-
-        public IPagedResult<TEntity> GetPagedResult<TEntity>(int startIndex, int pageSize, IQueryable<TEntity> query) where TEntity : class
-        {
-            if (!(query is IRavenQueryable<TEntity>))
-                return null;
-
-            RavenQueryStatistics stats;
-            IRavenQueryable<TEntity> exp = query as IRavenQueryable<TEntity>;
-            var result = exp.Statistics(out stats)
-                            .Skip(startIndex)
-                            .Take(pageSize)
-                            .ToArray();
-
-            return new PagedResult<TEntity>(startIndex, pageSize, stats.TotalResults, result);
-        }
-
-        public IPagedResult<TEntity> GetIndexPagedResult<TEntity>(int pageIndex, int pageSize, IQueryable<TEntity> query) where TEntity : class
-        {
-            if (!(query is IRavenQueryable<TEntity>))
-                return null;
-
-            RavenQueryStatistics stats;
-            IRavenQueryable<TEntity> exp = query as IRavenQueryable<TEntity>;
-            var result = exp.Statistics(out stats)
-                            .Skip(pageIndex * pageSize)
-                            .Take(pageSize)
-                            .ToArray();
-
-            return new PagedResult<TEntity>(pageIndex * pageSize, pageSize, stats.TotalResults, result);
-        }
     }
 }

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using PersistentLayer.Exceptions;
+using PersistentLayer.Raven;
 using Raven.Client;
 
 namespace PersistentLayer.Raven.Impl
@@ -117,19 +118,31 @@ namespace PersistentLayer.Raven.Impl
                 );
         }
 
-
-        public bool IsValidIdentifier<TDocument>(object identifier)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TDocument"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        public void VerifyIdentifier<TDocument, TKey>()
         {
-            var propertyInfo = this.store.Conventions.GetIdentityProperty(typeof (TDocument));
+            Type docType = typeof (TDocument);
+            var identifierProperty = this.store
+                                   .Conventions
+                                   .GetIdentityProperty(docType);
 
-            if (identifier == null)
+            var keyParamType = typeof (TKey);
+            var stringType = typeof (string);
+
+            if (identifierProperty == null)
             {
-                //System.Nullable`1
-                return false;
+                if (keyParamType != stringType)
+                    throw new InvalidIdentifierException(string.Format("The current document type (of <{0}>) doesn't have an identifier property, and this case the identifier parameter (type of <{1}>) must be a string type.", docType.FullName, keyParamType.FullName));
+                return;
             }
-            return this.GetConverterOf(identifier.GetType())
-                       .CanConvertTo(propertyInfo.PropertyType);
-            
+
+            TypeConverter paramConverter = this.GetConverterOf(keyParamType);
+            if (!paramConverter.CanConvertTo(identifierProperty.PropertyType))
+                throw new InvalidIdentifierException(string.Format("The identifier type (of <{0}>) is not compatible with the identifier property (of <{1}>) of the current document type (of <{2}>)", keyParamType.FullName, identifierProperty.PropertyType.FullName, docType.FullName));
         }
 
 
