@@ -7,6 +7,7 @@ using System.Transactions;
 using PersistentLayer.Exceptions;
 using PersistentLayer.Impl;
 using Raven.Client;
+using IsolationLevel = System.Data.IsolationLevel;
 
 namespace PersistentLayer.Raven.Impl
 {
@@ -59,6 +60,15 @@ namespace PersistentLayer.Raven.Impl
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="level"></param>
+        public void BeginTransaction(IsolationLevel? level)
+        {
+            this.BeginTransaction();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="name"></param>
         public void BeginTransaction(string name)
         {
@@ -78,6 +88,16 @@ namespace PersistentLayer.Raven.Impl
                 this.transactionScope = new TransactionScope();
             }
             this.transactions.Push(new TransactionInfo(name, index));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="level"></param>
+        public void BeginTransaction(string name, IsolationLevel? level)
+        {
+            this.BeginTransaction(name);
         }
 
         /// <summary>
