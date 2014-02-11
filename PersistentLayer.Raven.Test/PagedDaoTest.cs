@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using PersistentLayer.Exceptions;
 using PersistentLayer.Raven.Test.Domain;
 using Raven.Abstractions.Data;
 using Raven.Client.Converters;
@@ -313,32 +314,26 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void TestDocStoreInfo()
         {
-            this.DocStoreInfo.VerifyIdentifier<Person, byte>();
-            this.DocStoreInfo.VerifyIdentifier<Person, short>();
-            this.DocStoreInfo.VerifyIdentifier<Person, int>();
+            List<string> buffer = new List<string>();
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person, byte>(1));
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person, short>(100));
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person, int>(225));
 
             try
             {
-                this.DocStoreInfo.VerifyIdentifier<Person, string>();
+                buffer.Add(this.DocStoreInfo.GetIdentifier<Person, string>(string.Empty));
                 Assert.IsFalse(true);
             }
-            catch (Exception ex)
+            catch (InvalidIdentifierException ex)
             {
                 Assert.IsTrue(true);
-                
             }
 
-            try
-            {
-                this.DocStoreInfo.VerifyIdentifier<Person, int?>();
-                Assert.IsFalse(true);
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(true);
-                //throw ex;
-            }
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person, string>("5"));
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person, int?>(10));
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person, double?>(200));
 
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person, double?>(1.5));
         }
 
         [Test]
@@ -364,7 +359,19 @@ namespace PersistentLayer.Raven.Test
             //if (a.Value != null)
             //    Console.WriteLine();
 
-            
+            ValueType a = 5;
+            ValueType b = 10L;
+
+            Type typeA = a.GetType();
+            Type typeB = b.GetType();
+
+            var res = typeA.IsAssignableFrom(typeB);
+            var res1 = typeB.IsAssignableFrom(typeA);
+            var res3 = typeA.IsEquivalentTo(typeB);
+
+            //Assert.IsTrue(res);
+            Assert.IsTrue(res3);
+
         }
     }
 }

@@ -39,5 +39,14 @@ namespace PersistentLayer.Raven
         /// <returns></returns>
         TEntity MakePersistent<TEntity, TKey>(TEntity entity, TKey identifier, RavenEtag etag)
             where TEntity : class;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        TEntity MakePersistentUsingIdentity<TEntity>(TEntity entity)
+            where TEntity : class;
     }
 }

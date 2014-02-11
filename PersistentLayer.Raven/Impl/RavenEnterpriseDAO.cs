@@ -261,6 +261,19 @@ namespace PersistentLayer.Raven.Impl
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
+        public TEntity MakePersistentUsingIdentity<TEntity>(TEntity entity) where TEntity : class
+        {
+            string key = this.storeInfo.MakeDocumentKey<TEntity>(string.Empty);
+            this.Session.Store(entity, key);
+            return entity;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public TEntity MakePersistent<TEntity>(TEntity entity) where TEntity : class
         {
             this.Session.Store(entity);
@@ -290,6 +303,8 @@ namespace PersistentLayer.Raven.Impl
         /// <returns></returns>
         public TEntity MakePersistent<TEntity, TKey>(TEntity entity, TKey identifier) where TEntity : class
         {
+            
+
             string key = this.storeInfo.MakeDocumentKey<TEntity>(identifier.ToString());
             this.Session.Store(entity, key);
             return entity;
@@ -322,7 +337,8 @@ namespace PersistentLayer.Raven.Impl
             if (entities == null || !entities.Any())
                 return null;
 
-            return entities.Select(n => this.MakePersistent(n)).ToList();
+            return entities.Select(n => this.MakePersistent(n))
+                           .ToList();
         }
 
         /// <summary>

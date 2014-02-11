@@ -72,6 +72,6 @@ namespace PersistentLayer.Raven
         /// </summary>
         /// <typeparam name="TDocument"></typeparam>
         /// <typeparam name="TKey"></typeparam>
-        void VerifyIdentifier<TDocument, TKey>();
+        string GetIdentifier<TDocument, TKey>(TKey identifier);
     }
 }

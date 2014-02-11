@@ -123,26 +123,45 @@ namespace PersistentLayer.Raven.Impl
         /// </summary>
         /// <typeparam name="TDocument"></typeparam>
         /// <typeparam name="TKey"></typeparam>
-        public void VerifyIdentifier<TDocument, TKey>()
+        public string GetIdentifier<TDocument, TKey>(TKey identifier)
         {
             Type docType = typeof (TDocument);
             var identifierProperty = this.store
-                                   .Conventions
-                                   .GetIdentityProperty(docType);
+                                         .Conventions
+                                         .GetIdentityProperty(docType);
 
-            var keyParamType = typeof (TKey);
-            var stringType = typeof (string);
+            Type keyParamType = typeof(TKey);
+            Type stringType = typeof(string);
 
             if (identifierProperty == null)
             {
                 if (keyParamType != stringType)
                     throw new InvalidIdentifierException(string.Format("The current document type (of <{0}>) doesn't have an identifier property, and this case the identifier parameter (type of <{1}>) must be a string type.", docType.FullName, keyParamType.FullName));
-                return;
+                return identifier as string;
             }
 
-            TypeConverter paramConverter = this.GetConverterOf(keyParamType);
-            if (!paramConverter.CanConvertTo(identifierProperty.PropertyType))
-                throw new InvalidIdentifierException(string.Format("The identifier type (of <{0}>) is not compatible with the identifier property (of <{1}>) of the current document type (of <{2}>)", keyParamType.FullName, identifierProperty.PropertyType.FullName, docType.FullName));
+            //TypeConverter paramConverter = this.GetConverterOf(keyParamType);
+            //if (!paramConverter.CanConvertTo(identifierProperty.PropertyType))
+            //    throw new InvalidIdentifierException(string.Format("The identifier type (of <{0}>) is not compatible with the identifier property (of <{1}>) of the current document type (of <{2}>)", keyParamType.FullName, identifierProperty.PropertyType.FullName, docType.FullName));
+
+            //var res = paramConverter.IsValid(identifier);
+            
+            //res.ToString();
+            //var convertTo = paramConverter.ConvertTo(identifier, identifierProperty.PropertyType);
+            //if (convertTo != null)
+            //    return convertTo.ToString();
+
+            //return string.Empty;
+
+            try
+            {
+                return (Convert.ChangeType(identifier, identifierProperty.PropertyType)).ToString();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidIdentifierException(string.Format("The identifier type (of <{0}>) is not compatible with the identifier property (of <{1}>) of the current document type (of <{2}>)", keyParamType.FullName, identifierProperty.PropertyType.FullName, docType.FullName), ex);
+            }
+
         }
 
 
