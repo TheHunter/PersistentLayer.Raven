@@ -71,7 +71,8 @@ namespace PersistentLayer.Raven
         /// 
         /// </summary>
         /// <typeparam name="TDocument"></typeparam>
-        /// <typeparam name="TKey"></typeparam>
-        string GetIdentifier<TDocument, TKey>(TKey identifier);
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        string GetIdentifier<TDocument>(dynamic identifier);
     }
 }

@@ -287,41 +287,16 @@ namespace PersistentLayer.Raven.Test
         //}
 
         [Test]
-        public void TestReflection()
-        {
-            var converter = TypeDescriptor.GetConverter(typeof (double));
-            
-            //Assert.IsTrue(converter.CanConvertTo((100).GetType()));
-            //Assert.IsTrue(converter.CanConvertTo((100l).GetType()));
-            //Assert.IsTrue(converter.CanConvertTo((100f).GetType()));
-            //Assert.IsTrue(converter.CanConvertTo((100d).GetType()));
-            //Assert.IsTrue(converter.CanConvertTo(("100").GetType()));
-
-            var converter2 = TypeDescriptor.GetConverter(typeof (int?));
-            Assert.IsTrue(converter2.CanConvertTo(typeof(int)));
-
-            //var converter3 = TypeDescriptor.GetConverter(typeof(int));
-            //Assert.IsTrue(converter3.CanConvertTo(typeof(int?)));
-            int? p = 1;
-            int? q = null;
-
-            var res = converter2.ConvertTo(p, typeof (int));
-            var res1 = converter2.IsValid(q);
-            Assert.IsTrue(true);
-            
-        }
-
-        [Test]
-        public void TestDocStoreInfo()
+        public void TestDocStoreInfo2()
         {
             List<string> buffer = new List<string>();
-            buffer.Add(this.DocStoreInfo.GetIdentifier<Person, byte>(1));
-            buffer.Add(this.DocStoreInfo.GetIdentifier<Person, short>(100));
-            buffer.Add(this.DocStoreInfo.GetIdentifier<Person, int>(225));
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(1));
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(100));
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(225));
 
             try
             {
-                buffer.Add(this.DocStoreInfo.GetIdentifier<Person, string>(string.Empty));
+                buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(string.Empty));
                 Assert.IsFalse(true);
             }
             catch (InvalidIdentifierException ex)
@@ -329,48 +304,34 @@ namespace PersistentLayer.Raven.Test
                 Assert.IsTrue(true);
             }
 
-            buffer.Add(this.DocStoreInfo.GetIdentifier<Person, string>("5"));
-            buffer.Add(this.DocStoreInfo.GetIdentifier<Person, int?>(10));
-            buffer.Add(this.DocStoreInfo.GetIdentifier<Person, double?>(200));
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(10));
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(200));
 
-            buffer.Add(this.DocStoreInfo.GetIdentifier<Person, double?>(1.5));
+            try
+            {
+                buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(1.5));
+                Assert.IsFalse(true);
+            }
+            catch (InvalidIdentifierException ex)
+            {
+                Assert.IsTrue(true);
+            }
         }
 
         [Test]
         public void Test()
         {
-            //byte b = 1;
-            //short s = 1;
-            //float f = 1;
-            //long l = 1;
+            Assert.IsTrue(typeof(bool?).IsAssignableFrom(typeof(bool)));
+            Assert.IsTrue(typeof(byte?).IsAssignableFrom(typeof(byte)));
+            Assert.IsTrue(typeof(int?).IsAssignableFrom(typeof(int)));
+            Assert.IsTrue(typeof(long?).IsAssignableFrom(typeof(long)));
+            Assert.IsTrue(typeof(float?).IsAssignableFrom(typeof(float)));
+            Assert.IsTrue(typeof(double?).IsAssignableFrom(typeof(double)));
+            Assert.IsTrue(typeof(decimal?).IsAssignableFrom(typeof(decimal)));
 
-            //var converter = TypeDescriptor.GetConverter(typeof (int));
-            //Assert.IsTrue(converter.IsValid(b));
-            //Assert.IsTrue(converter.IsValid(s));
-            //Assert.IsFalse(converter.IsValid((s)));
-            //Assert.IsFalse(converter.IsValid((f)));
-            //Assert.IsFalse(converter.IsValid((l)));
-
-            //int? a = null;
-
-            //if (a == null)
-            //    Console.WriteLine(a.HasValue);
-
-            //if (a.Value != null)
-            //    Console.WriteLine();
-
-            ValueType a = 5;
-            ValueType b = 10L;
-
-            Type typeA = a.GetType();
-            Type typeB = b.GetType();
-
-            var res = typeA.IsAssignableFrom(typeB);
-            var res1 = typeB.IsAssignableFrom(typeA);
-            var res3 = typeA.IsEquivalentTo(typeB);
-
-            //Assert.IsTrue(res);
-            Assert.IsTrue(res3);
+            Assert.IsFalse(typeof(int?).IsAssignableFrom(typeof(byte)));
+            Assert.IsFalse(typeof(long?).IsAssignableFrom(typeof(byte)));
+            Assert.IsFalse(typeof(long?).IsAssignableFrom(typeof(int)));
 
         }
     }
