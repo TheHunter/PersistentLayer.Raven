@@ -333,6 +333,8 @@ namespace PersistentLayer.Raven.Test
             Assert.IsFalse(typeof(long?).IsAssignableFrom(typeof(byte)));
             Assert.IsFalse(typeof(long?).IsAssignableFrom(typeof(int)));
 
+            Assert.IsFalse(typeof(byte).IsAssignableFrom(typeof(byte?)));
+
         }
     }
 }
