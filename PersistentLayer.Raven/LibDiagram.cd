@@ -3,7 +3,7 @@
   <Class Name="PersistentLayer.Raven.Impl.DocumentStoreInfo">
     <Position X="9.25" Y="1" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAAAAAABAAAIAAAAAAAABAIAAAJAAgAA=</HashCode>
+      <HashCode>AAAAAAAAACAAAAAAAEBAAAIAAAAAAAABAIAAAIAAgAA=</HashCode>
       <FileName>Impl\DocumentStoreInfo.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -11,7 +11,7 @@
   <Class Name="PersistentLayer.Raven.Impl.RavenEnterpriseDAO">
     <Position X="5" Y="7.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EAAAAAAAAAAiAQgAAAAQAAAAAAAAIAAAAAEAAAEBACA=</HashCode>
+      <HashCode>EAAAAAAAAAAiAQgAAAAQAAAIAAAAIAAAAAEAAAEBACA=</HashCode>
       <FileName>Impl\RavenEnterpriseDAO.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -64,14 +64,14 @@
   <Interface Name="PersistentLayer.Raven.IDocumentStoreInfo">
     <Position X="7.25" Y="1" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAAAAAABAAAIAAAAAAAAAAIAAABAAAAA=</HashCode>
+      <HashCode>AAAAAAAAACAAAAAAAEBAAAIAAAAAAAAAAIAAAAAAAAA=</HashCode>
       <FileName>IDocumentStoreInfo.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="PersistentLayer.Raven.IRavenPersisterDAO">
     <Position X="2.75" Y="7.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IRavenPersisterDAO.cs</FileName>
     </TypeIdentifier>
   </Interface>

@@ -45,7 +45,7 @@ namespace PersistentLayer.Raven.Test
             var res1 = this.DAO.Exists<Person>(person => person.ID > 1);
             Assert.IsTrue(res1);
 
-            var res2 = this.DAO.Exists<Person>(person => person.ID > 100);
+            var res2 = this.DAO.Exists<Person>(person => person.ID > 1000);
             Assert.IsFalse(res2);
 
         }
@@ -121,6 +121,47 @@ namespace PersistentLayer.Raven.Test
             //Assert.IsNotNull(conventions);
         }
 
+        [Test]
+        public void MakePersistentTest()
+        {
+            Student st = new Student();
+            st.Key = "mykey";
+            st.Matricola = "121254842M";
+            var tranProvider = this.DAO.GetTransactionProvider();
+
+            //try
+            //{
+            //    tranProvider.BeginTransaction();
+            //    st.Key = "mykey";
+            //    st.Matricola = "121254842M";
+
+            //    this.DAO.MakePersistent<Student>(st);
+            //    tranProvider.CommitTransaction();
+            //}
+            //catch (Exception ex)
+            //{
+            //    tranProvider.RollbackTransaction(ex);
+            //    throw;
+            //}
+
+            var all = this.DAO.FindAll<Student>();
+            Assert.IsNotNull(all);
+            var res = this.DAO.Exists<Student, string>("mykey");
+            Assert.IsTrue(res);
+
+            try
+            {
+                tranProvider.BeginTransaction();
+                this.DAO.MakeTransient(st);
+                tranProvider.CommitTransaction();
+            }
+            catch (Exception ex)
+            {
+                tranProvider.RollbackTransaction(ex);
+                throw;
+            }
+            Assert.IsFalse(this.DAO.Exists<Student, string>(st.Key));
+        }
 
         //[Test]
         //public void TestCreatePerson()
@@ -290,9 +331,10 @@ namespace PersistentLayer.Raven.Test
         public void TestDocStoreInfo2()
         {
             List<string> buffer = new List<string>();
-            buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(1));
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person>((byte)1));
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person>((short)10));
             buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(100));
-            buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(225));
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(225m));
 
             try
             {
@@ -304,12 +346,22 @@ namespace PersistentLayer.Raven.Test
                 Assert.IsTrue(true);
             }
 
-            buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(10));
-            buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(200));
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(10D));
+            buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(200L));
 
             try
             {
-                buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(1.5));
+                buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(1.5F));
+                Assert.IsFalse(true);
+            }
+            catch (InvalidIdentifierException ex)
+            {
+                Assert.IsTrue(true);
+            }
+
+            try
+            {
+                buffer.Add(this.DocStoreInfo.GetIdentifier<Person>(-2.9D));
                 Assert.IsFalse(true);
             }
             catch (InvalidIdentifierException ex)
@@ -321,6 +373,7 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void Test()
         {
+            //double aa = 4.5f;
             Assert.IsTrue(typeof(bool?).IsAssignableFrom(typeof(bool)));
             Assert.IsTrue(typeof(byte?).IsAssignableFrom(typeof(byte)));
             Assert.IsTrue(typeof(int?).IsAssignableFrom(typeof(int)));
@@ -334,7 +387,6 @@ namespace PersistentLayer.Raven.Test
             Assert.IsFalse(typeof(long?).IsAssignableFrom(typeof(int)));
 
             Assert.IsFalse(typeof(byte).IsAssignableFrom(typeof(byte?)));
-
         }
     }
 }

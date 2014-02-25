@@ -1,0 +1,25 @@
+{
+  "Name": "Auto/Students/ByIdAndKey",
+  "LockMode": "Unlock",
+  "Map": "from doc in docs.Students\r\nselect new { Key = doc.Key, Id = doc.Id }",
+  "Maps": [
+    "from doc in docs.Students\r\nselect new { Key = doc.Key, Id = doc.Id }"
+  ],
+  "Reduce": null,
+  "TransformResults": null,
+  "IsMapReduce": false,
+  "IsCompiled": false,
+  "Stores": {},
+  "Indexes": {},
+  "SortOptions": {},
+  "Analyzers": {},
+  "Fields": [],
+  "Suggestions": {},
+  "TermVectors": {},
+  "SpatialIndexes": {},
+  "InternalFieldsMapping": {
+    "Key": "Key",
+    "Id": "Id"
+  },
+  "Type": "Auto"
+}

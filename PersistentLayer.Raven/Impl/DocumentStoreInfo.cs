@@ -133,15 +133,48 @@ namespace PersistentLayer.Raven.Impl
                                          .GetIdentityProperty(docType);
 
             if (identifier == null)
-                throw new InvalidIdentifierException(string.Format("The identifier value cannot be null, document type <{0}>.", docType.FullName));
+                throw new InvalidIdentifierException("The identifier value cannot be null");
 
-            Type keyParamType = identifier.GetType();
+            if (identifierProperty != null)
+            {
+                Type keyParamType = identifier.GetType();
+                Type docIdType = identifierProperty.PropertyType;
 
-            if (!identifierProperty.PropertyType.IsAssignableFrom(keyParamType))
-                throw new InvalidIdentifierException(string.Format("The identifier type (of <{0}>) is not compatible with the identifier property (of <{1}>) of the current document type (of <{2}>)", keyParamType.FullName, identifierProperty.PropertyType.FullName, docType.FullName));
+                if (!docIdType.IsAssignableFrom(keyParamType))
+                {
+                    // only numerical identifiers can be accepted at this point.
+                    if (!(keyParamType.IsNumeric() || keyParamType.IsNullableNumericType()))
+                        throw new InvalidIdentifierException("The indentifier is not compatible with identifier property, so It's not possible to make any kind of conversion.");
 
-            return identifier.ToString();
+                    var converter = this.GetConverterOf(keyParamType);
+                    if (!converter.CanConvertTo(docIdType))
+                        throw new InvalidIdentifierException("The indentifier cannot be converted into identifier property.");
+
+                    dynamic converted = converter.ConvertTo(identifier, docIdType);
+
+                    if (converted == null)
+                        throw new InvalidIdentifierException("The indentifier is not compatible with identifier property document because any converter can convert its value into adequate value.");
+
+                    dynamic res = identifier - converted;       // verify if original value was changed.
+                    if (res != 0)
+                        throw new InvalidIdentifierException("The indentifier was converted by a suitable converter, but Its original value was altered.");
+                }
+
+                if (identifier is string)
+                {
+                    if (string.IsNullOrWhiteSpace(identifier))
+                        throw new InvalidIdentifierException("The identifier cannot be an empty string.");
+                    return identifier;
+                }
+                
+                return identifier.ToString();
+            }
+
+            if (!(identifier is string))
+                throw new InvalidIdentifierException("The given identifier must be a string type because there's no identity property for the given document type.");
+            return identifier;
         }
+
 
         private TypeConverter GetConverterOf(Type type)
         {
