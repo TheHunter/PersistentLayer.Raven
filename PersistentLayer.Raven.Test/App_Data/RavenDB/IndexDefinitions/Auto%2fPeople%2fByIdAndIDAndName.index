@@ -1,0 +1,26 @@
+{
+  "Name": "Auto/People/ByIdAndIDAndName",
+  "LockMode": "Unlock",
+  "Map": "from doc in docs.People\r\nselect new { Name = doc.Name, ID = doc.ID, Id = doc.Id }",
+  "Maps": [
+    "from doc in docs.People\r\nselect new { Name = doc.Name, ID = doc.ID, Id = doc.Id }"
+  ],
+  "Reduce": null,
+  "TransformResults": null,
+  "IsMapReduce": false,
+  "IsCompiled": false,
+  "Stores": {},
+  "Indexes": {},
+  "SortOptions": {},
+  "Analyzers": {},
+  "Fields": [],
+  "Suggestions": {},
+  "TermVectors": {},
+  "SpatialIndexes": {},
+  "InternalFieldsMapping": {
+    "Name": "Name",
+    "ID": "ID",
+    "Id": "Id"
+  },
+  "Type": "Auto"
+}

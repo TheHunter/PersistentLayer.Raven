@@ -35,11 +35,14 @@ namespace PersistentLayer.Raven.Test
             };
 
             //storeCached.Conventions.FindIdentityPropertyNameFromEntityName = FindIdentityPropertyNameFromEntityName;
-            //storeCached.Conventions.FindIdentityProperty = FindIdentityProperty;
             storeCached.Conventions.FindIdentityProperty = (info => info.Name == "ID" || info.Name == "Key");
             storeCached.Conventions.DefaultQueryingConsistency = ConsistencyOptions.AlwaysWaitForNonStaleResultsAsOfLastWrite;
             storeCached.Conventions.IdentityTypeConvertors.Add(new NumericNullableConverter<int>());
             storeCached.Conventions.IdentityTypeConvertors.Add(new NumericNullableConverter<long>());
+
+            storeCached.Conventions.AllowQueriesOnId = true;
+
+            //storeCached.Conventions.GetIdentityProperty()
 
             //storeCached.Conventions.CustomizeJsonSerializer =
             //    serializer => serializer.TypeNameHandling = TypeNameHandling.All;

@@ -8,6 +8,7 @@ using PersistentLayer.Exceptions;
 using PersistentLayer.Raven.Test.Domain;
 using Raven.Abstractions.Data;
 using Raven.Client.Converters;
+using Raven.Client.Linq;
 
 namespace PersistentLayer.Raven.Test
 {
@@ -42,10 +43,11 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void ExistsWithExpressionTest()
         {
-            var res1 = this.DAO.Exists<Person>(person => person.ID > 1);
-            Assert.IsTrue(res1);
+            //var res1 = this.DAO.Exists<Person>(person => person.ID > 1);
+            //Assert.IsTrue(res1);
 
-            var res2 = this.DAO.Exists<Person>(person => person.ID > 1000);
+            //var res2 = this.DAO.Exists<Person>(person => person.ID == 10000);
+            var res2 = this.DAO.Exists<Person>(person => person.Name != null && person.ID > 10000 && person.ID < 10010);
             Assert.IsFalse(res2);
 
         }
@@ -65,6 +67,23 @@ namespace PersistentLayer.Raven.Test
             Assert.IsNull(person3);
             Assert.IsNull(person4);
 
+
+            IRavenQueryable<Person> a;
+            
+        }
+
+        [Test]
+        public void FindByIDTest()
+        {
+            //students/1
+            var res = this.DAO.FindBy<Student, string>("1");
+            Assert.IsNull(res);
+
+            var res1 = this.DAO.FindBy<Student, string>("mykey");
+            Assert.IsNotNull(res1);
+
+            var res2 = this.DAO.Exists<Student>(student => student.Key == "mykey");
+            Assert.IsTrue(res2);
         }
 
         [Test]
@@ -146,21 +165,22 @@ namespace PersistentLayer.Raven.Test
 
             var all = this.DAO.FindAll<Student>();
             Assert.IsNotNull(all);
-            var res = this.DAO.Exists<Student, string>("mykey");
-            Assert.IsTrue(res);
+            //var res = this.DAO.Exists<Student, string>("mykey");
+            var res1 = this.DAO.Exists<Student>(student => student.Key == "mykey");
+            Assert.IsTrue(res1);
 
-            try
-            {
-                tranProvider.BeginTransaction();
-                this.DAO.MakeTransient(st);
-                tranProvider.CommitTransaction();
-            }
-            catch (Exception ex)
-            {
-                tranProvider.RollbackTransaction(ex);
-                throw;
-            }
-            Assert.IsFalse(this.DAO.Exists<Student, string>(st.Key));
+            //try
+            //{
+            //    tranProvider.BeginTransaction();
+            //    this.DAO.MakeTransient(st);
+            //    tranProvider.CommitTransaction();
+            //}
+            //catch (Exception ex)
+            //{
+            //    tranProvider.RollbackTransaction(ex);
+            //    throw;
+            //}
+            //Assert.IsFalse(this.DAO.Exists<Student, string>(st.Key));
         }
 
         //[Test]

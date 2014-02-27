@@ -86,6 +86,8 @@ namespace PersistentLayer.Raven.Impl
             {
                 int total = identifiers.Count();
 
+                
+
                 return this.Session.Advanced.LuceneQuery<TEntity>()
                             .SelectFields<TEntity>("Id")
                             .WhereIn("Id",
@@ -111,7 +113,7 @@ namespace PersistentLayer.Raven.Impl
             try
             {
                 return this.Session.Query<TEntity>()
-                       .Any(predicate);
+                           .Any(predicate);
             }
             catch (Exception ex)
             {
@@ -136,11 +138,11 @@ namespace PersistentLayer.Raven.Impl
                 if (identifier is ValueType)
                     return session.Load<TEntity>(identifier as ValueType);
 
-                string key = this.storeInfo.MakeDocumentKey<TEntity>
-                    (
-                        identifier is string ? identifier as string : identifier.ToString()
-                    );
-                return session.Load<TEntity>(key);
+                //string key = this.storeInfo.MakeDocumentKey<TEntity>
+                //    (
+                //        identifier is string ? identifier as string : identifier.ToString()
+                //    );                
+                return session.Load<TEntity>(identifier.ToString());
             }
             catch (Exception ex)
             {
@@ -179,9 +181,9 @@ namespace PersistentLayer.Raven.Impl
         {
             try
             {
-                RavenQueryStatistics stats;
+                //RavenQueryStatistics stats;
                 return this.Session.Query<TEntity>()
-                           .Statistics(out stats)
+                           //.Statistics(out stats)
                            .Where(predicate)
                            .ToList();
             }
