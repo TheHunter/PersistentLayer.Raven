@@ -20,7 +20,8 @@ namespace PersistentLayer.Raven.Test
     [TestFixture]
     public class DataAccessor
     {
-        private readonly EmbeddableDocumentStore storeCached;
+        //private readonly EmbeddableDocumentStore storeCached;
+        private readonly DocumentStore storeCached;
         private readonly RavenEnterpriseDAO dao;
         private readonly ISessionBinder sessionContext;
         private readonly IDocumentStoreInfo docStoreInfo;
@@ -28,11 +29,19 @@ namespace PersistentLayer.Raven.Test
 
         public DataAccessor()
         {
-            storeCached = new EmbeddableDocumentStore
+            //storeCached = new EmbeddableDocumentStore
+            //{
+            //    DataDirectory =
+            //        @"C:\Users\Diego\Documents\visual studio 2012\Projects\PersistentLayer.Raven\PersistentLayer.Raven.Test\App_Data\RavenDB"
+            //};
+
+
+            storeCached = new DocumentStore
             {
-                DataDirectory =
-                    @"C:\Users\Diego\Documents\visual studio 2012\Projects\PersistentLayer.Raven\PersistentLayer.Raven.Test\App_Data\RavenDB"
+                Url = "https://kiwi.ravenhq.com/databases/TheHunter-salesarea",
+                ApiKey = "9994a2f8-fd78-418f-9490-9ff0e757fe6c"
             };
+            storeCached.Initialize();
 
             //storeCached.Conventions.FindIdentityPropertyNameFromEntityName = FindIdentityPropertyNameFromEntityName;
             storeCached.Conventions.FindIdentityProperty = (info => info.Name == "ID" || info.Name == "Key");
