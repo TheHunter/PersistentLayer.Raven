@@ -9,12 +9,13 @@ namespace PersistentLayer.Raven
     /// <summary>
     /// 
     /// </summary>
-    public interface ISessionContext
-        : ISessionProvider
+    public interface ISessionProvider
+        : IDisposable
     {
         /// <summary>
         /// 
         /// </summary>
-        bool HasSessionBinded { get; }
+        /// <returns></returns>
+        IDocumentSession GetCurrentSession();
     }
 }

@@ -58,5 +58,10 @@ namespace PersistentLayer.Raven.Impl
             return this.currentSession;
         }
 
+
+        public void Dispose()
+        {
+            
+        }
     }
 }

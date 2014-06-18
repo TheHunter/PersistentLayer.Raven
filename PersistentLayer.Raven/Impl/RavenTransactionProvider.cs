@@ -18,20 +18,20 @@ namespace PersistentLayer.Raven.Impl
         : IRavenTransactionProvider
     {
         private readonly Stack<ITransactionInfo> transactions;
-        private readonly ISessionContext sessionContext;
+        private readonly ISessionProvider sessionProvider;
         private TransactionScope transactionScope;
         private const string DefaultNaming = "anonymous";
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="sessionContext"></param>
-        public RavenTransactionProvider(ISessionContext sessionContext)
+        /// <param name="sessionProvider"></param>
+        public RavenTransactionProvider(ISessionProvider sessionProvider)
         {
-            if (sessionContext == null)
+            if (sessionProvider == null)
                 throw new BusinessLayerException("The IDocumentStore instance cannot be null.", "ctr RavenTransactionProvider");
 
-            this.sessionContext = sessionContext;
+            this.sessionProvider = sessionProvider;
             this.transactions =new Stack<ITransactionInfo>();
         }
 
@@ -82,8 +82,8 @@ namespace PersistentLayer.Raven.Impl
 
             if (this.transactions.Count == 0)
             {
-                if (!sessionContext.HasSessionBinded)
-                    throw new BusinessLayerException("Error on beginning a new transaction because of missing binded document session.", "BeginTransaction");
+                //if (!sessionProvider.HasSessionBinded)
+                //    throw new BusinessLayerException("Error on beginning a new transaction because of missing binded document session.", "BeginTransaction");
 
                 this.transactionScope = new TransactionScope();
             }
@@ -110,10 +110,10 @@ namespace PersistentLayer.Raven.Impl
                 ITransactionInfo info = transactions.Pop();
                 if (transactions.Count == 0)
                 {
-                    if (!sessionContext.HasSessionBinded)
-                        throw new BusinessLayerException("Error on Commiting the current transaction because of missing binded document session.", "CommitTransaction");
+                    //if (!sessionProvider.HasSessionBinded)
+                    //    throw new BusinessLayerException("Error on Commiting the current transaction because of missing binded document session.", "CommitTransaction");
                     
-                    IDocumentSession session = this.sessionContext.GetCurrentSession();
+                    IDocumentSession session = this.sessionProvider.GetCurrentSession();
 
                     try
                     {
@@ -177,9 +177,9 @@ namespace PersistentLayer.Raven.Impl
         /// <summary>
         /// 
         /// </summary>
-        public ISessionContext SessionContext
+        ISessionProvider IRavenTransactionProvider.SessionProvider
         {
-            get { return this.sessionContext; }
+            get { return this.sessionProvider; }
         }
 
         /// <summary>

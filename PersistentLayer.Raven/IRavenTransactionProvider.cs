@@ -11,9 +11,8 @@ namespace PersistentLayer.Raven
     public interface IRavenTransactionProvider
         : ITransactionProvider
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        ISessionContext SessionContext { get; }
+        
+        //ISessionContext SessionContext { get; }
+        ISessionProvider SessionProvider { get; }
     }
 }

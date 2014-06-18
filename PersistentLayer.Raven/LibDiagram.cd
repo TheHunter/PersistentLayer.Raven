@@ -11,7 +11,7 @@
   <Class Name="PersistentLayer.Raven.Impl.RavenEnterpriseDAO">
     <Position X="5" Y="7.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EAAAAAAAAAAiAQgAAAAQAAAIAAAAIAAAAAEAAAEBACA=</HashCode>
+      <HashCode>EAAAAAAAAAAiAQgAAAAwAAAYAAAAIAAAAAEAAAEBACA=</HashCode>
       <FileName>Impl\RavenEnterpriseDAO.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -69,7 +69,7 @@
     </TypeIdentifier>
   </Interface>
   <Interface Name="PersistentLayer.Raven.IRavenPersisterDAO">
-    <Position X="2.75" Y="7.75" Width="1.5" />
+    <Position X="3" Y="7.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAgAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IRavenPersisterDAO.cs</FileName>

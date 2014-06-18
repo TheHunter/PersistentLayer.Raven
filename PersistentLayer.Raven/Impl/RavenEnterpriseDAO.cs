@@ -48,7 +48,7 @@ namespace PersistentLayer.Raven.Impl
             get
             {
                 return this.transactionProvider
-                           .SessionContext
+                           .SessionProvider
                            .GetCurrentSession();
             }
         }
