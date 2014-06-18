@@ -73,6 +73,7 @@
     <Compile Include="IDocumentStoreInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RavenEtag.cs" />
+    <Compile Include="ReflectionExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LibDiagram.cd" />

@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using PersistentLayer.Exceptions;
 using PersistentLayer.Impl;
 using Raven.Abstractions.Data;
@@ -137,11 +141,7 @@ namespace PersistentLayer.Raven.Impl
 
                 if (identifier is ValueType)
                     return session.Load<TEntity>(identifier as ValueType);
-
-                //string key = this.storeInfo.MakeDocumentKey<TEntity>
-                //    (
-                //        identifier is string ? identifier as string : identifier.ToString()
-                //    );                
+              
                 return session.Load<TEntity>(identifier.ToString());
             }
             catch (Exception ex)
@@ -268,7 +268,8 @@ namespace PersistentLayer.Raven.Impl
         /// <typeparam name="TKey"></typeparam>
         /// <param name="identifiers"></param>
         /// <returns></returns>
-        public IEnumerable<TEntity> FindAll<TEntity, TKey>(params TKey[] identifiers) where TEntity : class
+        public IEnumerable<TEntity> FindAll<TEntity, TKey>(params TKey[] identifiers)
+            where TEntity : class
         {
             try
             {
@@ -282,6 +283,44 @@ namespace PersistentLayer.Raven.Impl
                 throw new ExecutionQueryException("Error on executing the FindAll method when the caller tried to load instances with the input identifiers.", MakeNamingMethod<TEntity, TKey>("FindAll"), ex);
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="queryExpr"></param>
+        /// <returns></returns>
+        public TResult ExecuteExpression<TEntity, TResult>(Expression<Func<IEnumerable<TEntity>, TResult>> queryExpr)
+            where TEntity : class
+        {
+            var ret = queryExpr.Compile()
+                            .Invoke(this.Session.Query<TEntity>());
+
+            Type resultType = typeof(TResult);
+            if (resultType.IsInterface && resultType.Implements(typeof (IEnumerable)))
+            {
+                if (resultType.IsGenericType)
+                {
+                    // for version net40
+                    Type t1 = resultType.GetGenericArguments()[0];
+                    if (t1.IsAnonymous())
+                    {
+                        Delegate del = ReflectionExtension.ToListEnumerableDelegate(resultType);
+                        object res = del.DynamicInvoke(ret);
+                        return (TResult)res;
+                    }
+                    return Enumerable.ToList(ret as dynamic);
+
+                    // for version net.35
+                    //Delegate del = CustomExtensions.ToListEnumerableDelegate(resultType);
+                    //object res = del.DynamicInvoke(ret);
+                    //return (TResult)res;
+                }
+            }
+            return ret;
+        }
+
 
         /// <summary>
         /// 

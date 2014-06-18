@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using NUnit.Framework;
 using PersistentLayer.Exceptions;
+using PersistentLayer.Raven.Impl;
 using PersistentLayer.Raven.Test.Domain;
 using Raven.Abstractions.Data;
 using Raven.Client.Converters;
@@ -391,6 +395,91 @@ namespace PersistentLayer.Raven.Test
         }
 
         [Test]
+        public void TestExternalizeExpression()
+        {
+            var customDAO = this.DAO as RavenEnterpriseDAO;
+            if (customDAO == null)
+                Assert.IsTrue(false, "No DAO is avaible..");
+
+            Expression<Func<IEnumerable<Person>, Person>> queryExpr
+                = persons => (from a in persons
+                             where a.ID == 1
+                             select a)
+                             .FirstOrDefault()
+                ;
+
+            var person = customDAO.ExecuteExpression(queryExpr);
+            Assert.IsNotNull(person);
+        }
+
+        [Test]
+        public void TestExternalizeExpressionWithProjection()
+        {
+            var customDAO = this.DAO as RavenEnterpriseDAO;
+            if (customDAO == null)
+                Assert.IsTrue(false, "No DAO is avaible..");
+
+            Expression<Func<IEnumerable<Person>, IEnumerable<string>>> queryExpr
+                = persons => (from a in persons
+                              select a.Name
+                              )
+                              .ToList()
+                ;
+
+            var peopleName = customDAO.ExecuteExpression(queryExpr);
+            Assert.IsNotNull(peopleName);
+        }
+
+        [Test]
+        public void TestExternalizeExpressionWithAnonymusType()
+        {
+            var customDAO = this.DAO as RavenEnterpriseDAO;
+            if (customDAO == null)
+                Assert.IsTrue(false, "No DAO is avaible..");
+
+            Expression<Func<IEnumerable<Person>, IEnumerable<dynamic>>> queryExpr
+                = persons => (from a in persons
+                              select new { a.Name, a.Surname})
+                ;
+
+            var peopleName = customDAO.ExecuteExpression(queryExpr);
+            Assert.IsNotNull(peopleName);
+
+            Type tt = peopleName.GetType();
+            Assert.IsNotNull(tt);
+
+            string nome = peopleName.FirstOrDefault().Name;
+            Assert.IsNotNull(nome);
+        }
+
+        [Test]
+        public void TestExternalizeExpression2()
+        {
+            var customDAO = this.DAO as RavenEnterpriseDAO;
+            if (customDAO == null)
+                Assert.IsTrue(false, "No DAO is avaible..");
+
+            // taking full advantage of inference !!
+            var result1 = customDAO.ExecuteExpression((IEnumerable<Person> entities) => entities.FirstOrDefault());
+            Assert.IsNotNull(result1);
+
+            var result2 = customDAO.ExecuteExpression((IEnumerable<Person> entities) => entities.Where(person1 => person1.ID < 5));
+            Assert.IsNotNull(result2);
+
+            var result3 = customDAO.ExecuteExpression((IEnumerable<Person> entities) => entities.Select(person => new { person.Name, person.Surname }));
+            Assert.IsNotNull(result3);
+
+            var result4 = customDAO.ExecuteExpression((IEnumerable<Person> entities) => entities.Where(person => person.ID > 1).Select(person => new { person.Name, person.Surname }));
+            Assert.IsNotNull(result4);
+
+            var result5 = customDAO.ExecuteExpression((IEnumerable<Person> entities) => entities.Select(person => new PersonPrj { Name = person.Name, Surname = person.Surname }));
+            Assert.IsNotNull(result5);
+
+            var result6 = customDAO.ExecuteExpression((IEnumerable<Person> entities) => entities.Select<Person, dynamic>(person => new { Name = person.Name, Surname = person.Surname }));
+            Assert.IsNotNull(result6);
+        }
+
+        [Test]
         public void Test()
         {
             //double aa = 4.5f;
@@ -407,6 +496,25 @@ namespace PersistentLayer.Raven.Test
             Assert.IsFalse(typeof(long?).IsAssignableFrom(typeof(int)));
 
             Assert.IsFalse(typeof(byte).IsAssignableFrom(typeof(byte?)));
+        }
+
+        [Test]
+        public void Test2()
+        {
+            var t = typeof (string[]);
+            Assert.IsTrue(t.IsArray);
+
+            var j = typeof (List<string>);
+            Assert.IsTrue(j.IsClass && j.Implements(typeof(IEnumerable<string>)));
+
+            Assert.IsTrue(j.Implements(typeof(IEnumerable)));
+            Assert.IsTrue(j.Implements(typeof(IEnumerable<>)));
+
+            Assert.IsFalse(j.Implements(typeof(List<string>)));
+
+
+            MethodInfo method = typeof (Enumerable).GetMethod("ToList");
+            Assert.IsNotNull(method);
         }
     }
 }

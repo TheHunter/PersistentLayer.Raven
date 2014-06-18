@@ -22,4 +22,11 @@ namespace PersistentLayer.Raven.Test.Domain
 
         public string Surname { get; set; }
     }
+
+    public class PersonPrj
+    {
+        public string Name { get; set; }
+
+        public string Surname { get; set; }
+    }
 }
