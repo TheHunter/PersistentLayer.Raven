@@ -14,25 +14,36 @@ namespace PersistentLayer.Raven.Impl
     /// <summary>
     /// 
     /// </summary>
-    public class RavenTransactionProvider
-        : IRavenTransactionProvider
+    [Serializable]
+    //public class RavenTransactionProvider
+        //: IRavenTransactionProvider
+    public abstract class SessionProvider
+        : ISessionProvider
     {
         private readonly Stack<ITransactionInfo> transactions;
-        private readonly ISessionProvider sessionProvider;
         private TransactionScope transactionScope;
         private const string DefaultNaming = "anonymous";
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="sessionProvider"></param>
-        public RavenTransactionProvider(ISessionProvider sessionProvider)
+        protected SessionProvider()
         {
-            if (sessionProvider == null)
-                throw new BusinessLayerException("The IDocumentStore instance cannot be null.", "ctr RavenTransactionProvider");
+            transactions = new Stack<ITransactionInfo>();
+        }
 
-            this.sessionProvider = sessionProvider;
-            this.transactions =new Stack<ITransactionInfo>();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public abstract IDocumentSession GetCurrentSession();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool InProgress
+        {
+            get { return this.transactions.Count > 0; }
         }
 
         /// <summary>
@@ -51,7 +62,25 @@ namespace PersistentLayer.Raven.Impl
         /// <summary>
         /// 
         /// </summary>
-        public void BeginTransaction()
+        public virtual void BeginTransaction()
+        {
+            this.BeginTransaction((IsolationLevel?)null);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        public virtual void BeginTransaction(string name)
+        {
+            this.BeginTransaction(name, null);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="level"></param>
+        public virtual void BeginTransaction(IsolationLevel? level)
         {
             int index = transactions.Count;
             this.BeginTransaction(string.Format("{0}_{1}", DefaultNaming, index));
@@ -60,17 +89,9 @@ namespace PersistentLayer.Raven.Impl
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="level"></param>
-        public void BeginTransaction(IsolationLevel? level)
-        {
-            this.BeginTransaction();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="name"></param>
-        public void BeginTransaction(string name)
+        /// <param name="level"></param>
+        public virtual void BeginTransaction(string name, IsolationLevel? level)
         {
             if (name == null || name.Trim().Equals(string.Empty))
                 throw new BusinessLayerException("The transaction name cannot be null or empty", "BeginTransaction");
@@ -93,17 +114,7 @@ namespace PersistentLayer.Raven.Impl
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="level"></param>
-        public void BeginTransaction(string name, IsolationLevel? level)
-        {
-            this.BeginTransaction(name);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void CommitTransaction()
+        public virtual void CommitTransaction()
         {
             if (transactions.Count > 0)
             {
@@ -112,11 +123,11 @@ namespace PersistentLayer.Raven.Impl
                 {
                     //if (!sessionProvider.HasSessionBinded)
                     //    throw new BusinessLayerException("Error on Commiting the current transaction because of missing binded document session.", "CommitTransaction");
-                    
-                    IDocumentSession session = this.sessionProvider.GetCurrentSession();
 
                     try
                     {
+                        IDocumentSession session = this.GetCurrentSession();
+
                         session.SaveChanges();
                         this.transactionScope.Complete();
                     }
@@ -129,7 +140,7 @@ namespace PersistentLayer.Raven.Impl
                     }
                     finally
                     {
-                        this.CleanTransactions();
+                        this.Reset();
                     }
                 }
             }
@@ -138,7 +149,7 @@ namespace PersistentLayer.Raven.Impl
         /// <summary>
         /// 
         /// </summary>
-        public void RollbackTransaction()
+        public virtual void RollbackTransaction()
         {
             this.RollbackTransaction(null);
         }
@@ -147,7 +158,7 @@ namespace PersistentLayer.Raven.Impl
         /// 
         /// </summary>
         /// <param name="cause"></param>
-        public void RollbackTransaction(Exception cause)
+        public virtual void RollbackTransaction(Exception cause)
         {
             if (this.transactions.Count > 0)
             {
@@ -161,31 +172,15 @@ namespace PersistentLayer.Raven.Impl
                 }
                 finally
                 {
-                    this.CleanTransactions();
+                    this.Reset();
                 }
             }
         }
 
         /// <summary>
-        /// 
+        /// Clear all internal transactions.
         /// </summary>
-        public bool InProgress
-        {
-            get { return this.transactions.Count > 0; }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        ISessionProvider IRavenTransactionProvider.SessionProvider
-        {
-            get { return this.sessionProvider; }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected virtual void CleanTransactions()
+        protected virtual void Reset()
         {
             if (transactionScope == null)
                 return;
@@ -193,6 +188,21 @@ namespace PersistentLayer.Raven.Impl
             this.transactionScope.Dispose();
             this.transactions.Clear();
             this.transactionScope = null;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual void Dispose()
+        {
+            try
+            {
+                if (this.InProgress)
+                    this.RollbackTransaction();
+            }
+            catch
+            {
+            }
         }
     }
 }

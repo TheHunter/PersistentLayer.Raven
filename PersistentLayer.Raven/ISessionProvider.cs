@@ -10,7 +10,7 @@ namespace PersistentLayer.Raven
     /// 
     /// </summary>
     public interface ISessionProvider
-        : IDisposable
+        : ITransactionProvider, IDisposable
     {
         /// <summary>
         /// 

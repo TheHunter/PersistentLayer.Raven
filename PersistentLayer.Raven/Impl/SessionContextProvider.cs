@@ -11,7 +11,7 @@ namespace PersistentLayer.Raven.Impl
     /// 
     /// </summary>
     public class SessionContextProvider
-        : ISessionContextProvider
+        : SessionProvider, ISessionContextProvider
     {
         private readonly object keyContext;
         private readonly Func<IDocumentSession> sessionSupplier;
@@ -22,7 +22,10 @@ namespace PersistentLayer.Raven.Impl
         private IDocumentSession sessionCached;
         private bool wasDisposed;
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionSupplier"></param>
         public SessionContextProvider(Func<IDocumentSession> sessionSupplier)
             : this(sessionSupplier, DefaultContext)
         {
@@ -76,7 +79,7 @@ namespace PersistentLayer.Raven.Impl
             get { return keyContext; }
         }
 
-        public IDocumentSession GetCurrentSession()
+        public override IDocumentSession GetCurrentSession()
         {
             if (wasDisposed)
                 throw new SessionNotAvailableException("There's no suitable session for making CRUD operations because the calling instance was disposed.", "GetCurrentSession");
@@ -102,20 +105,20 @@ namespace PersistentLayer.Raven.Impl
         /// <summary>
         /// 
         /// </summary>
-        public void Dispose()
+        public override void Dispose()
         {
             this.wasDisposed = true;
 
-            //base.Dispose();
+            base.Dispose();
             this.Reset();
         }
 
         /// <summary>
         /// Clear all internal transactions and close current session.
         /// </summary>
-        protected void Reset()
+        protected override void Reset()
         {
-            //base.Reset();         // clear all tarnsactions, so It's needed to implement this method on 
+            base.Reset();
             if (this.sessionCached != null)
             {
                 //if (this.sessionCached.IsOpen)

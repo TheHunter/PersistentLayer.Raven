@@ -20,23 +20,23 @@ namespace PersistentLayer.Raven.Impl
     public class RavenEnterpriseDAO
         : IRavenPagedDAO
     {
-        private readonly IRavenTransactionProvider transactionProvider;
+        private readonly ISessionProvider sessionProvider;
         private readonly IDocumentStoreInfo storeInfo;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="transactionProvider"></param>
+        /// <param name="sessionProvider"></param>
         /// <param name="storeInfo"></param>
-        public RavenEnterpriseDAO(IRavenTransactionProvider transactionProvider, IDocumentStoreInfo storeInfo)
+        public RavenEnterpriseDAO(ISessionProvider sessionProvider, IDocumentStoreInfo storeInfo)
         {
-            if (transactionProvider == null)
+            if (sessionProvider == null)
                 throw new BusinessObjectException("The ITransactionProvider instance cannot be null.");
 
             if (storeInfo == null)
                 throw new BusinessObjectException("The IDocumentStoreInfo cannot be null.");
 
-            this.transactionProvider = transactionProvider;
+            this.sessionProvider = sessionProvider;
             this.storeInfo = storeInfo;
         }
 
@@ -47,9 +47,9 @@ namespace PersistentLayer.Raven.Impl
         {
             get
             {
-                return this.transactionProvider
-                           .SessionProvider
+                return this.sessionProvider
                            .GetCurrentSession();
+                
             }
         }
 
@@ -351,7 +351,7 @@ namespace PersistentLayer.Raven.Impl
         /// <returns></returns>
         public ITransactionProvider GetTransactionProvider()
         {
-            return this.transactionProvider;
+            return this.sessionProvider;
         }
 
         /// <summary>

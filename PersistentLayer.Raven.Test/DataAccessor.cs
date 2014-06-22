@@ -23,9 +23,8 @@ namespace PersistentLayer.Raven.Test
         //private readonly EmbeddableDocumentStore storeCached;
         private readonly DocumentStore storeCached;
         private readonly RavenEnterpriseDAO dao;
-        private readonly ISessionBinder sessionContext;
         private readonly IDocumentStoreInfo docStoreInfo;
-        private readonly IRavenTransactionProvider transactionProvider;
+        private readonly ISessionProvider sessionProvider;
 
         public DataAccessor()
         {
@@ -58,10 +57,10 @@ namespace PersistentLayer.Raven.Test
 
             //storeCached.Conventions.RegisterIdConvention<Person>(Func);
             storeCached.Initialize();
-            sessionContext = new SessionBinder();
-            transactionProvider = new RavenTransactionProvider(sessionContext);
+            sessionProvider = new SessionContextProvider(() => storeCached.OpenSession());
+
             docStoreInfo = new DocumentStoreInfo(storeCached);
-            dao = new RavenEnterpriseDAO(transactionProvider, docStoreInfo);
+            dao = new RavenEnterpriseDAO(sessionProvider, docStoreInfo);
         }
 
         [TestFixtureSetUp]
@@ -79,18 +78,18 @@ namespace PersistentLayer.Raven.Test
         [SetUp]
         protected void BindSession()
         {
-            sessionContext.Bind(storeCached.OpenSession());
+            //sessionContext.Bind(storeCached.OpenSession());
         }
 
         [TearDown]
         public void UnBindSession()
         {
-            var session = sessionContext.UnBind();
-            if (session != null)
-            {
-                // What happens when a Dispose method is called twice ??
-                session.Dispose();
-            }
+            //var session = sessionContext.UnBind();
+            //if (session != null)
+            //{
+            //    // What happens when a Dispose method is called twice ??
+            //    session.Dispose();
+            //}
         }
 
         /// <summary>
