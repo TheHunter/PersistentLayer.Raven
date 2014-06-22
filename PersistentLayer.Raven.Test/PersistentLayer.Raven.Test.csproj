@@ -53,8 +53,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="PersistentLayer">
-      <HintPath>..\packages\PersistentLayer.4.2.2.11\lib\net40\PersistentLayer.dll</HintPath>
+    <Reference Include="PersistentLayer, Version=5.3.3.12, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\PersistentLayer.5.3.3.12\lib\net40\PersistentLayer.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Abstractions">
       <HintPath>..\packages\RavenDB.Client.2.5.2750\lib\net40\Raven.Abstractions.dll</HintPath>

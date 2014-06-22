@@ -150,6 +150,20 @@ namespace PersistentLayer.Raven.Impl
             }
         }
 
+        public TEntity UniqueResult<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class
+        {
+            try
+            {
+                return this.Session.Query<TEntity>()
+                           .Where(predicate)
+                           .SingleOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw new ExecutionQueryException("Error on executing the FindBy method when the caller tried to load the instance for the input identifier, see innerException for details.", MakeNamingMethod<TEntity>("UniqueResult"), ex);
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
