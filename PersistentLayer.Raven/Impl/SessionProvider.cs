@@ -14,9 +14,7 @@ namespace PersistentLayer.Raven.Impl
     /// <summary>
     /// 
     /// </summary>
-    [Serializable]
-    //public class RavenTransactionProvider
-        //: IRavenTransactionProvider
+    [Serializable]    
     public abstract class SessionProvider
         : ISessionProvider
     {

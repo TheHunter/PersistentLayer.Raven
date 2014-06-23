@@ -11,24 +11,16 @@
   <Class Name="PersistentLayer.Raven.Impl.RavenEnterpriseDAO">
     <Position X="5" Y="7.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EAAAAAAAAAAiAQgAAAAwAAAYAAAAIAAAAAEAAAEBACA=</HashCode>
+      <HashCode>EAAAAAAAAAAiAQgCAAA0AAAYAAAAIAAAAAEAAAEBAAA=</HashCode>
       <FileName>Impl\RavenEnterpriseDAO.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="PersistentLayer.Raven.Impl.RavenTransactionProvider">
+  <Class Name="PersistentLayer.Raven.Impl.SessionProvider">
     <Position X="9.25" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AABAAAABIgAAAAIAAAEAAAAAAAAAAAAAACAAABEAoAA=</HashCode>
-      <FileName>Impl\RavenTransactionProvider.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="PersistentLayer.Raven.Impl.SessionBinder">
-    <Position X="3.75" Y="1" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>CAACgAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
-      <FileName>Impl\SessionBinder.cs</FileName>
+      <HashCode>AABAAAABIiAABAAAAAEAAAAAAAAAAAAAAAAAABEAoAA=</HashCode>
+      <FileName>Impl\SessionProvider.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -40,25 +32,26 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Interface Name="PersistentLayer.Raven.ISessionContext">
+  <Class Name="PersistentLayer.Raven.Impl.SessionContextProvider" Collapsed="true">
+    <Position X="9.25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAQiACBAAAggABAAAAAAAIAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>Impl\SessionContextProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PersistentLayer.Raven.Impl.SessionCacheProvider" Collapsed="true">
+    <Position X="9.25" Y="12" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAIAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>Impl\SessionCacheProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="PersistentLayer.Raven.ISessionProvider">
     <Position X="1.5" Y="1" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ISessionContext.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
-  <Interface Name="PersistentLayer.Raven.ISessionBinder">
-    <Position X="1.5" Y="3.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
-      <FileName>ISessionBinder.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
-  <Interface Name="PersistentLayer.Raven.IRavenTransactionProvider">
-    <Position X="7.25" Y="5.75" Width="1.5" />
-    <TypeIdentifier>
       <HashCode>AAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>IRavenTransactionProvider.cs</FileName>
+      <FileName>ISessionProvider.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="PersistentLayer.Raven.IDocumentStoreInfo">
@@ -87,6 +80,13 @@
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IRavenQueryableDAO.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="PersistentLayer.Raven.ISessionContextProvider">
+    <Position X="1.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ISessionContextProvider.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />

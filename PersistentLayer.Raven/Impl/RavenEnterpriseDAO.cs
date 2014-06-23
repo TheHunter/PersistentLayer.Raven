@@ -49,7 +49,6 @@ namespace PersistentLayer.Raven.Impl
             {
                 return this.sessionProvider
                            .GetCurrentSession();
-                
             }
         }
 
@@ -89,9 +88,6 @@ namespace PersistentLayer.Raven.Impl
             try
             {
                 int total = identifiers.Count();
-
-                
-
                 return this.Session.Advanced.LuceneQuery<TEntity>()
                             .SelectFields<TEntity>("Id")
                             .WhereIn("Id",
