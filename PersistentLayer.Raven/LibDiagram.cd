@@ -8,11 +8,11 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="PersistentLayer.Raven.Impl.RavenEnterpriseDAO">
+  <Class Name="PersistentLayer.Raven.Impl.RavenRootEnterpriseDAO&lt;TRootEntity&gt;">
     <Position X="5" Y="7.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EAAAAAAAAAAiAQgCAAA0AAAYAAAAIAAAAAEAAAEBAAA=</HashCode>
-      <FileName>Impl\RavenEnterpriseDAO.cs</FileName>
+      <FileName>Impl\RavenRootEnterpriseDao.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -61,25 +61,25 @@
       <FileName>IDocumentStoreInfo.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="PersistentLayer.Raven.IRavenPersisterDAO">
+  <Interface Name="PersistentLayer.Raven.IRavenPersisterDAO&lt;TRootEntity&gt;">
     <Position X="3" Y="7.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAgAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IRavenPersisterDAO.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="PersistentLayer.Raven.IRavenPagedDAO">
+  <Interface Name="PersistentLayer.Raven.IRavenRootPagedDAO&lt;TRootEntity&gt;">
     <Position X="1.5" Y="9.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>IRavenPagedDAO.cs</FileName>
+      <FileName>IRavenRootPagedDao.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="PersistentLayer.Raven.IRavenQueryableDAO">
+  <Interface Name="PersistentLayer.Raven.IRavenRootQueryableDAO&lt;TRootEntity&gt;">
     <Position X="1.5" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>IRavenQueryableDAO.cs</FileName>
+      <FileName>IRavenRootQueryableDAO.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="PersistentLayer.Raven.ISessionContextProvider">

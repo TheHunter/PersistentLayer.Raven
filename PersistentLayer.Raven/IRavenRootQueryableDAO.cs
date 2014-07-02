@@ -10,8 +10,9 @@ namespace PersistentLayer.Raven
     /// <summary>
     /// 
     /// </summary>
-    public interface IRavenQueryableDAO
-        : IQueryableDAO
+    public interface IRavenRootQueryableDAO<in TRootEntity>
+        : IRootQueryableDAO<TRootEntity>
+        where TRootEntity : class
     {
         /// <summary>
         /// 
@@ -21,7 +22,7 @@ namespace PersistentLayer.Raven
         /// <param name="isMapReduce"></param>
         /// <returns></returns>
         IEnumerable<TEntity> FindAll<TEntity>(string indexName, bool isMapReduce)
-            where TEntity : class;
+            where TEntity : class, TRootEntity;
 
         /// <summary>
         /// 
@@ -32,7 +33,7 @@ namespace PersistentLayer.Raven
         /// <param name="predicate"></param>
         /// <returns></returns>
         IEnumerable<TEntity> FindAll<TEntity>(string indexName, bool isMapReduce, Expression<Func<TEntity, bool>> predicate)
-            where TEntity : class;
+            where TEntity : class, TRootEntity;
 
         /// <summary>
         /// 
@@ -41,8 +42,8 @@ namespace PersistentLayer.Raven
         /// <typeparam name="TKey"></typeparam>
         /// <param name="identifiers"></param>
         /// <returns></returns>
-        IEnumerable<TEntity> FindAll<TEntity, TKey>(IEnumerable<TKey> identifiers)
-            where TEntity : class;
+        IEnumerable<TEntity> FindAll<TEntity>(IEnumerable<object> identifiers)
+            where TEntity : class, TRootEntity;
 
         /// <summary>
         /// 
@@ -51,7 +52,7 @@ namespace PersistentLayer.Raven
         /// <typeparam name="TKey"></typeparam>
         /// <param name="identifiers"></param>
         /// <returns></returns>
-        IEnumerable<TEntity> FindAll<TEntity, TKey>(params TKey[] identifiers)
-            where TEntity : class;
+        IEnumerable<TEntity> FindAll<TEntity>(params object[] identifiers)
+            where TEntity : class, TRootEntity;
     }
 }

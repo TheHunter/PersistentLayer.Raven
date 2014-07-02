@@ -62,13 +62,13 @@
     <Compile Include="Converters\NumericNullableConverter.cs" />
     <Compile Include="CustomExtensions.cs" />
     <Compile Include="Impl\DocumentStoreInfo.cs" />
-    <Compile Include="Impl\RavenEnterpriseDAO.cs" />
+    <Compile Include="Impl\RavenRootEnterpriseDao.cs" />
     <Compile Include="Impl\SessionCacheProvider.cs" />
     <Compile Include="Impl\SessionProvider.cs" />
     <Compile Include="Impl\SessionContextProvider.cs" />
-    <Compile Include="IRavenPagedDAO.cs" />
+    <Compile Include="IRavenRootPagedDao.cs" />
     <Compile Include="IRavenPersisterDAO.cs" />
-    <Compile Include="IRavenQueryableDAO.cs" />
+    <Compile Include="IRavenRootQueryableDAO.cs" />
     <Compile Include="IDocumentStoreInfo.cs" />
     <Compile Include="ISessionContextProvider.cs" />
     <Compile Include="ISessionProvider.cs" />

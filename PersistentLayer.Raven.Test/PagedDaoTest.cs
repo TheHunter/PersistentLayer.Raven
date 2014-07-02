@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
@@ -22,13 +23,13 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void ExistsTest()
         {
-            var res1=this.DAO.Exists<Person, int>(1);
+            var res1=this.DAO.Exists<Person>(1);
             Assert.IsTrue(res1);
 
-            var res2 = this.DAO.Exists<Person, string>("1");
+            var res2 = this.DAO.Exists<Person>("1");
             Assert.IsTrue(res2);
 
-            var res3 = this.DAO.Exists<Person, string>("1001");
+            var res3 = this.DAO.Exists<Person>("1001");
             Assert.IsFalse(res3);
 
         }
@@ -36,12 +37,24 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void ExistsIDsTest()
         {
-            var res1 = this.DAO.Exists<Person, int>(new[]{1, 100});
+            var res1 = this.DAO.Exists<Person>(new[]{1, 100});
             Assert.IsTrue(res1);
 
-            var res2 = this.DAO.Exists<Person, int>(new[] { 1, 100, 5 });
+            var res2 = this.DAO.Exists<Person>(new[] { 1, 100, 5 });
             Assert.IsFalse(res2);
 
+        }
+
+        [Test]
+        public void ExistsIDsTest2()
+        {
+            List<int> l1 = new List<int>
+                {
+                    1, 2
+                };
+
+            var res = this.DAO.Exists<Person>(l1);
+            Assert.IsTrue(res);
         }
 
         [Test]
@@ -59,14 +72,14 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void FindByTest()
         {
-            var person1 = this.DAO.FindBy<Person, string>("1");
-            var person2 = this.DAO.FindBy<Person, int>(1);
+            var person1 = this.DAO.FindBy<Person>("1");
+            var person2 = this.DAO.FindBy<Person>(1);
 
             Assert.IsNotNull(person1);
             Assert.IsNotNull(person2);
 
-            var person3 = this.DAO.FindBy<Person, string>("2");
-            var person4 = this.DAO.FindBy<Person, int>(2);
+            var person3 = this.DAO.FindBy<Person>("2");
+            var person4 = this.DAO.FindBy<Person>(2);
 
             Assert.IsNull(person3);
             Assert.IsNull(person4);
@@ -80,10 +93,10 @@ namespace PersistentLayer.Raven.Test
         public void FindByIDTest()
         {
             //students/1
-            var res = this.DAO.FindBy<Student, string>("1");
+            var res = this.DAO.FindBy<Student>("1");
             Assert.IsNull(res);
 
-            var res1 = this.DAO.FindBy<Student, string>("mykey");
+            var res1 = this.DAO.FindBy<Student>("mykey");
             Assert.IsNotNull(res1);
 
             var res2 = this.DAO.Exists<Student>(student => student.Key == "mykey");
@@ -214,7 +227,7 @@ namespace PersistentLayer.Raven.Test
             //var person = this.Accessor.MakePersistent(p, "anotherCls/101");     //ok, ID = 100
             Assert.IsNotNull(person);
 
-            var ret = this.DAO.FindBy<Person, string>("210");
+            var ret = this.DAO.FindBy<Person>("210");
             Assert.IsNotNull(ret);
         }
 
@@ -397,7 +410,7 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void TestExternalizeExpression()
         {
-            var customDAO = this.DAO as RavenEnterpriseDAO;
+            var customDAO = this.DAO as RavenRootEnterpriseDAO<object>;
             if (customDAO == null)
                 Assert.IsTrue(false, "No DAO is avaible..");
 
@@ -415,7 +428,7 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void TestExternalizeExpressionWithProjection()
         {
-            var customDAO = this.DAO as RavenEnterpriseDAO;
+            var customDAO = this.DAO as RavenRootEnterpriseDAO<object>;
             if (customDAO == null)
                 Assert.IsTrue(false, "No DAO is avaible..");
 
@@ -433,7 +446,7 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void TestExternalizeExpressionWithAnonymusType()
         {
-            var customDAO = this.DAO as RavenEnterpriseDAO;
+            var customDAO = this.DAO as RavenRootEnterpriseDAO<object>;
             if (customDAO == null)
                 Assert.IsTrue(false, "No DAO is avaible..");
 
@@ -455,7 +468,7 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void TestExternalizeExpression2()
         {
-            var customDAO = this.DAO as RavenEnterpriseDAO;
+            var customDAO = this.DAO as RavenRootEnterpriseDAO<object>;
             if (customDAO == null)
                 Assert.IsTrue(false, "No DAO is avaible..");
 

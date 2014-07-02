@@ -8,8 +8,9 @@ namespace PersistentLayer.Raven
     /// <summary>
     /// 
     /// </summary>
-    public interface IRavenPersisterDAO
-        : IPersisterDAO
+    public interface IRavenPersisterDAO<in TRootEntity>
+        : IRootPersisterDAO<TRootEntity>
+        where TRootEntity : class
     {
         /// <summary>
         /// 
@@ -26,19 +27,18 @@ namespace PersistentLayer.Raven
         /// <param name="etag"></param>
         /// <returns></returns>
         TEntity MakePersistent<TEntity>(TEntity entity, RavenEtag etag)
-            where TEntity : class;
+            where TEntity : class, TRootEntity;
 
         /// <summary>
         /// 
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
-        /// <typeparam name="TKey"></typeparam>
         /// <param name="entity"></param>
         /// <param name="identifier"></param>
         /// <param name="etag"></param>
         /// <returns></returns>
-        TEntity MakePersistent<TEntity, TKey>(TEntity entity, TKey identifier, RavenEtag etag)
-            where TEntity : class;
+        TEntity MakePersistent<TEntity>(TEntity entity, object identifier, RavenEtag etag)
+            where TEntity : class, TRootEntity;
 
         /// <summary>
         /// 
@@ -47,6 +47,6 @@ namespace PersistentLayer.Raven
         /// <param name="entity"></param>
         /// <returns></returns>
         TEntity MakePersistentUsingIdentity<TEntity>(TEntity entity)
-            where TEntity : class;
+            where TEntity : class, TRootEntity;
     }
 }
