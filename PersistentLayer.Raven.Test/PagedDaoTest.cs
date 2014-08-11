@@ -414,7 +414,7 @@ namespace PersistentLayer.Raven.Test
             if (customDAO == null)
                 Assert.IsTrue(false, "No DAO is avaible..");
 
-            Expression<Func<IEnumerable<Person>, Person>> queryExpr
+            Expression<Func<IQueryable<Person>, Person>> queryExpr
                 = persons => (from a in persons
                              where a.ID == 1
                              select a)
@@ -432,7 +432,7 @@ namespace PersistentLayer.Raven.Test
             if (customDAO == null)
                 Assert.IsTrue(false, "No DAO is avaible..");
 
-            Expression<Func<IEnumerable<Person>, IEnumerable<string>>> queryExpr
+            Expression<Func<IQueryable<Person>, IEnumerable<string>>> queryExpr
                 = persons => (from a in persons
                               select a.Name
                               )
@@ -450,7 +450,7 @@ namespace PersistentLayer.Raven.Test
             if (customDAO == null)
                 Assert.IsTrue(false, "No DAO is avaible..");
 
-            Expression<Func<IEnumerable<Person>, IEnumerable<dynamic>>> queryExpr
+            Expression<Func<IQueryable<Person>, IEnumerable<dynamic>>> queryExpr
                 = persons => (from a in persons
                               select new { a.Name, a.Surname})
                 ;
@@ -473,22 +473,22 @@ namespace PersistentLayer.Raven.Test
                 Assert.IsTrue(false, "No DAO is avaible..");
 
             // taking full advantage of inference !!
-            var result1 = customDAO.ExecuteExpression((IEnumerable<Person> entities) => entities.FirstOrDefault());
+            var result1 = customDAO.ExecuteExpression((IQueryable<Person> entities) => entities.FirstOrDefault());
             Assert.IsNotNull(result1);
 
-            var result2 = customDAO.ExecuteExpression((IEnumerable<Person> entities) => entities.Where(person1 => person1.ID < 5));
+            var result2 = customDAO.ExecuteExpression((IQueryable<Person> entities) => entities.Where(person1 => person1.ID < 5));
             Assert.IsNotNull(result2);
 
-            var result3 = customDAO.ExecuteExpression((IEnumerable<Person> entities) => entities.Select(person => new { person.Name, person.Surname }));
+            var result3 = customDAO.ExecuteExpression((IQueryable<Person> entities) => entities.Select(person => new { person.Name, person.Surname }));
             Assert.IsNotNull(result3);
 
-            var result4 = customDAO.ExecuteExpression((IEnumerable<Person> entities) => entities.Where(person => person.ID > 1).Select(person => new { person.Name, person.Surname }));
+            var result4 = customDAO.ExecuteExpression((IQueryable<Person> entities) => entities.Where(person => person.ID > 1).Select(person => new { person.Name, person.Surname }));
             Assert.IsNotNull(result4);
 
-            var result5 = customDAO.ExecuteExpression((IEnumerable<Person> entities) => entities.Select(person => new PersonPrj { Name = person.Name, Surname = person.Surname }));
+            var result5 = customDAO.ExecuteExpression((IQueryable<Person> entities) => entities.Select(person => new PersonPrj { Name = person.Name, Surname = person.Surname }));
             Assert.IsNotNull(result5);
 
-            var result6 = customDAO.ExecuteExpression((IEnumerable<Person> entities) => entities.Select<Person, dynamic>(person => new { Name = person.Name, Surname = person.Surname }));
+            var result6 = customDAO.ExecuteExpression((IQueryable<Person> entities) => entities.Select<Person, dynamic>(person => new { Name = person.Name, Surname = person.Surname }));
             Assert.IsNotNull(result6);
         }
 

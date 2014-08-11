@@ -293,32 +293,18 @@ namespace PersistentLayer.Raven.Impl
         /// <typeparam name="TResult"></typeparam>
         /// <param name="queryExpr"></param>
         /// <returns></returns>
-        public TResult ExecuteExpression<TEntity, TResult>(Expression<Func<IEnumerable<TEntity>, TResult>> queryExpr)
+        public TResult ExecuteExpression<TEntity, TResult>(Expression<Func<IQueryable<TEntity>, TResult>> queryExpr)
             where TEntity : class, TRootEntity
         {
             var ret = queryExpr.Compile()
                             .Invoke(this.Session.Query<TEntity>());
 
             Type resultType = typeof(TResult);
-            if (resultType.IsInterface && resultType.Implements(typeof (IEnumerable)))
+            if (resultType.Implements(typeof(IQueryable<>)) && resultType.IsGenericType)
             {
-                if (resultType.IsGenericType)
-                {
-                    // for version net40
-                    Type t1 = resultType.GetGenericArguments()[0];
-                    if (t1.IsAnonymous())
-                    {
-                        Delegate del = ReflectionExtension.ToListEnumerableDelegate(resultType);
-                        object res = del.DynamicInvoke(ret);
-                        return (TResult)res;
-                    }
-                    return Enumerable.ToList(ret as dynamic);
-
-                    // for version net.35
-                    //Delegate del = CustomExtensions.ToListEnumerableDelegate(resultType);
-                    //object res = del.DynamicInvoke(ret);
-                    //return (TResult)res;
-                }
+                var dyn = Enumerable.ToList(ret as dynamic);
+                var rr = Queryable.AsQueryable(dyn);
+                return rr;
             }
             return ret;
         }
