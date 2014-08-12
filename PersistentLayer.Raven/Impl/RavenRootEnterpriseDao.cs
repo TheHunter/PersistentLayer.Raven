@@ -63,12 +63,22 @@ namespace PersistentLayer.Raven.Impl
         {
             try
             {
-                string key = this.storeInfo
-                             .MakeDocumentKey<TEntity>(identifier.ToString());
-                
-                return this.Session.Advanced.LuceneQuery<TEntity>()
-                           .Search("Id", key)
-                           .Any();
+                if (identifier == null)
+                    throw new ArgumentNullException("identifier", "The given parameter cannot be null.");
+
+                try
+                {
+                    string key = this.storeInfo
+                                 .MakeDocumentKey<TEntity>(this.storeInfo.GetIdentifier<TEntity>(identifier));
+
+                    return this.Session.Advanced.LuceneQuery<TEntity>()
+                               .Search("Id", key)
+                               .Any();
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
             }
             catch (Exception ex)
             {
@@ -76,19 +86,47 @@ namespace PersistentLayer.Raven.Impl
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="identifiers"></param>
+        /// <returns></returns>
         public bool Exists<TEntity>(ICollection identifiers) where TEntity : class, TRootEntity
         {
-            int total = identifiers.Count;
-            long count = this.Session.Advanced.LuceneQuery<TEntity>()
-                             .WhereIn("Id",
-                                      identifiers.Cast<object>()
-                                                 .Select(
-                                                     key =>
-                                                     this.storeInfo.MakeDocumentKey<TEntity>(key.ToString()) as object)
-                )
-                             .LongCount();
+            try
+            {
+                if (identifiers == null)
+                    throw new ArgumentNullException("identifiers", "The given parameter cannot be null.");
 
-            return total == count;
+                List<object> ids = new List<object>();
+                foreach (var id in identifiers)
+                {
+                    try
+                    {
+                        string currentId = this.storeInfo.MakeDocumentKey<TEntity>(
+                            this.storeInfo.GetIdentifier<TEntity>(id));
+                        
+                        ids.Add(currentId);
+                    }
+                    catch (Exception)
+                    {
+                        // ignore exceptions..
+                    }
+                }
+
+                int total = identifiers.Count;
+                long count = this.Session.Advanced.LuceneQuery<TEntity>()
+                                 .WhereIn("Id", ids)
+                                 .LongCount();
+
+                return total == count;
+            }
+            catch (Exception ex)
+            {
+                throw new ExecutionQueryException("Error on executing the Exists method when the caller tried to evaluate the parameter expression, see innerException for details", MakeNamingMethod<TEntity>("Exists"), ex);
+            }
+
         }
 
         /// <summary>
@@ -122,11 +160,19 @@ namespace PersistentLayer.Raven.Impl
             try
             {
                 var session = this.Session;
+                
+                //if (identifier is ValueType)
+                //    return session.Load<TEntity>(identifier as ValueType);
 
-                if (identifier is ValueType)
-                    return session.Load<TEntity>(identifier as ValueType);
+                //return session.Load<TEntity>(identifier.ToString());
 
-                return session.Load<TEntity>(identifier.ToString());
+                string currentId = this.storeInfo.MakeDocumentKey<TEntity>(
+                            this.storeInfo.GetIdentifier<TEntity>(identifier));
+
+                if (currentId == null)
+                    throw new NullReferenceException("The given identifier mustn't be null, verify the type of identifier of the current Entity.");
+
+                return session.Load<TEntity>(identifier as dynamic);
             }
             catch (Exception ex)
             {
@@ -250,28 +296,6 @@ namespace PersistentLayer.Raven.Impl
         /// <param name="identifiers"></param>
         /// <returns></returns>
         public IEnumerable<TEntity> FindAll<TEntity>(IEnumerable<object> identifiers) where TEntity : class, TRootEntity
-        {
-            try
-            {
-                if (identifiers == null || !identifiers.Any())
-                    throw new QueryArgumentException("Identifiers to load cannot be null or empty", MakeNamingMethod<TEntity>("FindAll"), "identifiers");
-
-                return this.LoadDocuments<TEntity, object>(identifiers);
-            }
-            catch (Exception ex)
-            {
-                throw new ExecutionQueryException("Error on executing the FindAll method when the caller tried to load instances with the input identifiers.", MakeNamingMethod<TEntity>("FindAll"), ex);
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="identifiers"></param>
-        /// <returns></returns>
-        public IEnumerable<TEntity> FindAll<TEntity>(params object[] identifiers)
-            where TEntity : class, TRootEntity
         {
             try
             {

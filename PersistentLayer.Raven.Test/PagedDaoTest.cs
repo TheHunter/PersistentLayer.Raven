@@ -27,9 +27,9 @@ namespace PersistentLayer.Raven.Test
             Assert.IsTrue(res1);
 
             var res2 = this.DAO.Exists<Person>("1");
-            Assert.IsTrue(res2);
+            Assert.IsFalse(res2);
 
-            var res3 = this.DAO.Exists<Person>("1001");
+            var res3 = this.DAO.Exists<Person>(1001);
             Assert.IsFalse(res3);
 
         }
@@ -37,12 +37,17 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void ExistsIDsTest()
         {
-            var res1 = this.DAO.Exists<Person>(new[]{1, 100});
+            var res1 = this.DAO.Exists<Person>(new[] { 1, 100 });
             Assert.IsTrue(res1);
 
             var res2 = this.DAO.Exists<Person>(new[] { 1, 100, 5 });
             Assert.IsFalse(res2);
 
+            var res3 = this.DAO.Exists<Person>(new[] { 1, 2, 3 });
+            Assert.IsTrue(res3);
+
+            var res4 = this.DAO.Exists<Person>(new object[] { 1, "2", 3 });
+            Assert.IsFalse(res4);
         }
 
         [Test]
@@ -60,10 +65,6 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void ExistsWithExpressionTest()
         {
-            //var res1 = this.DAO.Exists<Person>(person => person.ID > 1);
-            //Assert.IsTrue(res1);
-
-            //var res2 = this.DAO.Exists<Person>(person => person.ID == 10000);
             var res2 = this.DAO.Exists<Person>(person => person.Name != null && person.ID > 10000 && person.ID < 10010);
             Assert.IsFalse(res2);
 
@@ -72,21 +73,18 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void FindByTest()
         {
-            var person1 = this.DAO.FindBy<Person>("1");
-            var person2 = this.DAO.FindBy<Person>(1);
-
+            var person1 = this.DAO.FindBy<Person>(1);
             Assert.IsNotNull(person1);
+
+            var person2 = this.DAO.FindBy<Person>(2);
             Assert.IsNotNull(person2);
+        }
 
-            var person3 = this.DAO.FindBy<Person>("2");
-            var person4 = this.DAO.FindBy<Person>(2);
-
-            Assert.IsNull(person3);
-            Assert.IsNull(person4);
-
-
-            IRavenQueryable<Person> a;
-            
+        [Test]
+        [ExpectedException(typeof(ExecutionQueryException))]
+        public void WrongFindByTest()
+        {
+            this.DAO.FindBy<Person>("1");
         }
 
         [Test]

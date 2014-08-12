@@ -39,20 +39,11 @@ namespace PersistentLayer.Raven
         /// 
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
-        /// <typeparam name="TKey"></typeparam>
         /// <param name="identifiers"></param>
         /// <returns></returns>
         IEnumerable<TEntity> FindAll<TEntity>(IEnumerable<object> identifiers)
             where TEntity : class, TRootEntity;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <typeparam name="TKey"></typeparam>
-        /// <param name="identifiers"></param>
-        /// <returns></returns>
-        IEnumerable<TEntity> FindAll<TEntity>(params object[] identifiers)
-            where TEntity : class, TRootEntity;
+        
     }
 }

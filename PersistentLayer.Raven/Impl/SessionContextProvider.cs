@@ -32,7 +32,11 @@ namespace PersistentLayer.Raven.Impl
 
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionSupplier"></param>
+        /// <param name="keyContext"></param>
         public SessionContextProvider(Func<IDocumentSession> sessionSupplier, object keyContext)
         {
             if (sessionSupplier == null)
@@ -74,11 +78,18 @@ namespace PersistentLayer.Raven.Impl
             #endregion
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public object KeyContext
         {
             get { return keyContext; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override IDocumentSession GetCurrentSession()
         {
             if (wasDisposed)
