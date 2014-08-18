@@ -119,9 +119,6 @@ namespace PersistentLayer.Raven.Impl
                 ITransactionInfo info = transactions.Pop();
                 if (transactions.Count == 0)
                 {
-                    //if (!sessionProvider.HasSessionBinded)
-                    //    throw new BusinessLayerException("Error on Commiting the current transaction because of missing binded document session.", "CommitTransaction");
-
                     try
                     {
                         IDocumentSession session = this.GetCurrentSession();

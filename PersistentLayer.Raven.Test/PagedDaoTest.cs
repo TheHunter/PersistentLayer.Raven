@@ -158,9 +158,7 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void MakePersistentTest()
         {
-            Student st = new Student();
-            st.Key = "mykey";
-            st.Matricola = "121254842M";
+            Student st = new Student {Key = "mykey", Matricola = "121254842M"};
             var tranProvider = this.DAO.GetTransactionProvider();
 
             //try
@@ -184,32 +182,8 @@ namespace PersistentLayer.Raven.Test
             var res1 = this.DAO.Exists<Student>(student => student.Key == "mykey");
             Assert.IsTrue(res1);
 
-            //try
-            //{
-            //    tranProvider.BeginTransaction();
-            //    this.DAO.MakeTransient(st);
-            //    tranProvider.CommitTransaction();
-            //}
-            //catch (Exception ex)
-            //{
-            //    tranProvider.RollbackTransaction(ex);
-            //    throw;
-            //}
-            //Assert.IsFalse(this.DAO.Exists<Student, string>(st.Key));
-        }
-
-        //[Test]
-        //public void TestCreatePerson()
-        //{
-        //    Person p = new Person();
-        //    p.Name = "James";
-        //    p.Surname = "Brown";
-
-        //    var person = this.Accessor.MakePersistent(p);
-        //    this.Save();
             
-        //    Assert.IsNotNull(person);
-        //}
+        }
 
         [Test]
         public void TestCreatePerson2()
@@ -237,16 +211,15 @@ namespace PersistentLayer.Raven.Test
             {
                 tran.BeginTransaction();
 
-                Person p = new Person { Name = "James", Surname = "Brown7" };
-                //Person person = this.DAO.MakePersistent<Person, int>(p, 210);     //ok, ID
-                //Person person = this.DAO.MakePersistent<Person, string>(p, "220");     //ok, ID
-                //Person person = this.DAO.MakePersistent(p, "221");     //ok
-                //Person person = this.DAO.MakePersistent(p, "ciao");     //ko
-                Person person = this.DAO.MakePersistent(p, "");     //ko
+                Person p = new Person { Name = "James", Surname = "Brown11" };
+                //Person person = this.DAO.MakePersistent(p, 101);            //ok
+                //Person person = this.DAO.MakePersistent(p, 33);             //uses HILO algorithm
+                Person person = this.DAO.MakePersistent(p, true);                   //uses identity algorithm
                 Assert.IsNotNull(person);
 
                 tran.CommitTransaction();
 
+                Assert.AreNotEqual(person.ID, 0);
             }
             catch (Exception ex)
             {
@@ -265,17 +238,21 @@ namespace PersistentLayer.Raven.Test
 
                 tran.BeginTransaction();
 
-                PersonV2 p = new PersonV2 { Name = "James", Surname = "Brown8" };
-                //person = this.DAO.MakePersistent<Person, int>(p, 210);     //ok, ID
-                //person = this.DAO.MakePersistent<Person, string>(p, "220");     //ok, ID
-                //person = this.DAO.MakePersistent(p, "221");     //ok
-                //person = this.DAO.MakePersistent(p, "ciao");     //ko format exception
-                //person = this.DAO.MakePersistent(p, "");     //ok  uses identity
-                person = this.DAO.MakePersistent(p, (string)null);     //ok  uses identity
+                PersonV2 p = new PersonV2 { Name = "James", Surname = "Brown11" };
+                
+                // ok uses identity
+                // but The identity is not get by 
+                person = this.DAO.MakePersistent(p, true);
+                
                 Assert.IsNotNull(person);
+
+                // if commit operation wasn't executed, so no identity value has been computed by server side.
+                Assert.IsNull(person.ID);
 
                 tran.CommitTransaction();
 
+                // afetr comit operation, the identity was computed by server, so after that identity is avaible
+                Assert.IsNotNull(person.ID);
             }
             catch (Exception ex)
             {
@@ -287,6 +264,10 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void TestAllPersons()
         {
+            dynamic a = 5L;
+            Assert.IsTrue(a is long);
+            Assert.IsTrue(a is dynamic);
+
             //var persons = this.DAO.FindAll<Person>();
             //Assert.IsNotNull(persons);
 
@@ -295,73 +276,7 @@ namespace PersistentLayer.Raven.Test
             
         }
 
-        //[Test]
-        //public void TestCreatePersonV2()
-        //{
-        //    var person = new PersonV2(1);
-        //    person.Name = "Name1";
-        //    person.Surname = "Surname1";
-
-        //    this.Accessor.MakePersistent(person);
-        //    this.Save();
-
-        //    Assert.IsNotNull(person);
-        //}
-
-        //[Test]
-        //public void TestCreatePersonV2_2()
-        //{
-        //    var person = new PersonV2();
-        //    person.Name = "Name2";
-        //    person.Surname = "Surname2";
-
-        //    //this.Accessor.MakePersistent(person);
-        //    this.Accessor.MakePersistent(person, "personV2s/");
-        //    this.Save();
-
-        //    Assert.IsNotNull(person);
-        //}
-
-        //[Test]
-        //public void TestCreateStudent()
-        //{
-        //    Student st = new Student();
-        //    st.Key = "first";           //Raven keeps the assign identifier
-        //    st.Matricola = "12121A";
-
-        //    var student = this.Accessor.MakePersistent(st);
-
-        //    //newone without ID
-        //    // in this case Raven generates an unique identifier composed by class naming + incremental Id
-        //    // generated by HILO algorithm
-        //    this.Accessor.MakePersistent(new Student {Matricola = "451263B"});
-
-        //    this.Save();
-
-        //    Assert.IsNotNull(student);
-        //}
-
         
-
-        //[Test]
-        //public void TestCreateStudent2()
-        //{
-            
-        //    List<Student> list = new List<Student>();
-        //    //newone without ID
-        //    // in this case Raven generates an unique identifier composed by class naming + incremental Id
-        //    // generated by HILO algorithm
-            
-        //    //list.Add(this.Accessor.MakePersistent(new Student { Key = "/", Matricola = "011263B" }));  // errore nella generazione della chiave.
-        //    //list.Add(this.Accessor.MakePersistent(new Student { Key = "students/", Matricola = "011263B" }));
-        //    list.Add(this.Accessor.MakePersistent(new Student { Key = "students/", Matricola = "021263B" }));
-        //    //list.Add(this.Accessor.MakePersistent(new Student { Key = "students/", Matricola = "031263B" }));
-
-        //    this.Save();
-
-        //    Assert.IsNotNull(list);
-        //}
-
         [Test]
         public void TestDocStoreInfo2()
         {

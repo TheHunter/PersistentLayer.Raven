@@ -16,8 +16,9 @@ namespace PersistentLayer.Raven
         /// 
         /// </summary>
         /// <param name="entity"></param>
+        /// <param name="useIdentity"></param>
         /// <returns></returns>
-        dynamic MakePersistent(dynamic entity);
+        dynamic MakePersistent(dynamic entity, bool useIdentity);
 
         /// <summary>
         /// /
@@ -40,13 +41,8 @@ namespace PersistentLayer.Raven
         TEntity MakePersistent<TEntity>(TEntity entity, object identifier, RavenEtag etag)
             where TEntity : class, TRootEntity;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        TEntity MakePersistentUsingIdentity<TEntity>(TEntity entity)
-            where TEntity : class, TRootEntity;
+        
+        //TEntity MakePersistentUsingIdentity<TEntity>(TEntity entity)
+        //    where TEntity : class, TRootEntity;
     }
 }

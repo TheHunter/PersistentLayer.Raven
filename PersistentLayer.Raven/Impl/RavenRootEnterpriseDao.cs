@@ -370,12 +370,21 @@ namespace PersistentLayer.Raven.Impl
         /// 
         /// </summary>
         /// <param name="entity"></param>
+        /// <param name="useIdentity"></param>
         /// <returns></returns>
-        public dynamic MakePersistent(dynamic entity)
+        public dynamic MakePersistent(dynamic entity, bool useIdentity)
         {
             try
             {
-                this.Session.Store(entity);
+                if (useIdentity)
+                {
+                    this.MakePersistentUsingIdentity(entity);
+                }
+                else
+                {
+                    this.Session.Store(entity);
+                }
+
                 return entity;
             }
             catch (Exception ex)
@@ -390,19 +399,24 @@ namespace PersistentLayer.Raven.Impl
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public TEntity MakePersistentUsingIdentity<TEntity>(TEntity entity) where TEntity : class, TRootEntity
+        private dynamic MakePersistentUsingIdentity(dynamic entity)
         {
-            try
-            {
-                string key = this.storeInfo.MakeDocumentKey<TEntity>(string.Empty);
-                this.Session.Store(entity, key);
-                return entity;
-            }
-            catch (Exception ex)
-            {
-                throw new BusinessPersistentException("Error on making persistent the given instance.", MakeNamingMethod<TEntity>("MakePersistentUsingIdentity"), ex);
-            }
+            string key = this.storeInfo.MakeDocumentKey(string.Empty, entity.GetType());
+            this.Session.Store(entity, key);
+
+            //this.Session.Advanced.Evict();
+            //this.Session.Advanced.Clear();
+
+            return entity;
         }
+
+        
+        //private dynamic MakePersistentUsingIdentity(object entity, RavenEtag etag)
+        //{
+        //    string key = this.storeInfo.MakeDocumentKey(string.Empty, entity.GetType());
+        //    this.Session.Store(entity, etag.Etag, key);
+        //    return entity;
+        //}
 
         /// <summary>
         /// 

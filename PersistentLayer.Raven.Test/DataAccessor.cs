@@ -47,8 +47,18 @@ namespace PersistentLayer.Raven.Test
             storeCached.Conventions.DefaultQueryingConsistency = ConsistencyOptions.AlwaysWaitForNonStaleResultsAsOfLastWrite;
             storeCached.Conventions.IdentityTypeConvertors.Add(new NumericNullableConverter<int>());
             storeCached.Conventions.IdentityTypeConvertors.Add(new NumericNullableConverter<long>());
+            storeCached.Conventions.IdentityTypeConvertors.RemoveAll(converter => converter is Int32Converter);
+            //Int32Converter
 
             storeCached.Conventions.AllowQueriesOnId = true;
+
+            var cc =
+                    storeCached.Conventions.IdentityTypeConvertors.FirstOrDefault(x => x.CanConvertFrom(typeof(int)));
+            var cc1 =
+                    storeCached.Conventions.IdentityTypeConvertors.FirstOrDefault(x => x.CanConvertFrom(typeof(Int32)));
+
+            Assert.IsNotNull(cc);
+            Assert.IsNotNull(cc1);
 
             //storeCached.Conventions.GetIdentityProperty()
 

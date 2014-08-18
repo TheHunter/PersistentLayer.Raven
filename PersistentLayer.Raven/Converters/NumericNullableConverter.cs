@@ -32,7 +32,8 @@ namespace PersistentLayer.Raven.Converters
         /// <returns></returns>
         public bool CanConvertFrom(Type sourceType)
         {
-            return this.type == sourceType;
+            //return this.type == sourceType;
+            return this.type.IsAssignableFrom(sourceType);
         }
 
         /// <summary>
