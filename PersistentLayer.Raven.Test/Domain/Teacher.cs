@@ -5,11 +5,14 @@ using System.Text;
 
 namespace PersistentLayer.Raven.Test.Domain
 {
-    public class StudentV2
+    public class Teacher
     {
+        public int Id { get; set; }
+
         public string Name { get; set; }
 
-        public string Matricola { get; set; }
+        public string Surname { get; set; }
 
+        public int BoardNumber { get; set; }
     }
 }

@@ -59,7 +59,8 @@ namespace PersistentLayer.Raven.Impl
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="identifier"></param>
         /// <returns></returns>
-        public bool Exists<TEntity>(object identifier) where TEntity : class, TRootEntity
+        public bool Exists<TEntity>(object identifier)
+            where TEntity : class, TRootEntity
         {
             try
             {
@@ -92,7 +93,8 @@ namespace PersistentLayer.Raven.Impl
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="identifiers"></param>
         /// <returns></returns>
-        public bool Exists<TEntity>(ICollection identifiers) where TEntity : class, TRootEntity
+        public bool Exists<TEntity>(ICollection identifiers)
+            where TEntity : class, TRootEntity
         {
             try
             {
@@ -135,17 +137,34 @@ namespace PersistentLayer.Raven.Impl
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public bool Exists<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class, TRootEntity
+        public bool Exists<TEntity>(Expression<Func<TEntity, bool>> predicate)
+            where TEntity : class, TRootEntity
         {
             try
             {
-                return this.Session.Query<TEntity>()
+                return this.MakeQuery<TEntity>()
                            .Any(predicate);
             }
             catch (Exception ex)
             {
                 throw new ExecutionQueryException("Error on executing the Exists method when the caller tried to evaluate the parameter expression, see innerException for details", MakeNamingMethod<TEntity>("Exists"), ex);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="indexName"></param>
+        /// <param name="isMapReduce"></param>
+        /// <returns></returns>
+        public IDocumentQuery<TEntity> MakeLuceneQuery<TEntity>(string indexName = null, bool isMapReduce = false)
+            where TEntity : class, TRootEntity
+        {
+            if (string.IsNullOrWhiteSpace(indexName))
+                return this.Session.Advanced.LuceneQuery<TEntity>();
+
+            return this.Session.Advanced.LuceneQuery<TEntity>(indexName.Trim(), isMapReduce);
         }
 
         /// <summary>
@@ -161,11 +180,6 @@ namespace PersistentLayer.Raven.Impl
             {
                 var session = this.Session;
                 
-                //if (identifier is ValueType)
-                //    return session.Load<TEntity>(identifier as ValueType);
-
-                //return session.Load<TEntity>(identifier.ToString());
-
                 string currentId = this.storeInfo.MakeDocumentKey<TEntity>(
                             this.storeInfo.GetIdentifier<TEntity>(identifier));
 
@@ -186,11 +200,12 @@ namespace PersistentLayer.Raven.Impl
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public TEntity UniqueResult<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class, TRootEntity
+        public TEntity UniqueResult<TEntity>(Expression<Func<TEntity, bool>> predicate)
+            where TEntity : class, TRootEntity
         {
             try
             {
-                return this.Session.Query<TEntity>()
+                return this.MakeQuery<TEntity>()
                            .Where(predicate)
                            .SingleOrDefault();
             }
@@ -205,20 +220,10 @@ namespace PersistentLayer.Raven.Impl
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public IEnumerable<TEntity> FindAll<TEntity>() where TEntity : class, TRootEntity
+        public IEnumerable<TEntity> FindAll<TEntity>()
+            where TEntity : class, TRootEntity
         {
-            try
-            {
-                RavenQueryStatistics stats;
-                return this.Session.Query<TEntity>()
-                           .Statistics(out stats)
-                    //.Customize(x => x.WaitForNonStaleResults(TimeSpan.FromSeconds(10)))
-                           .ToList();
-            }
-            catch (Exception ex)
-            {
-                throw new ExecutionQueryException("Error on executing the FindAll method.", MakeNamingMethod<TEntity>("FindAll"), ex);
-            }
+            return this.FindAll<TEntity>((IndexParameter)null);
         }
 
         /// <summary>
@@ -227,7 +232,8 @@ namespace PersistentLayer.Raven.Impl
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public IEnumerable<TEntity> FindAll<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class, TRootEntity
+        public IEnumerable<TEntity> FindAll<TEntity>(Expression<Func<TEntity, bool>> predicate)
+            where TEntity : class, TRootEntity
         {
             try
             {
@@ -247,16 +253,17 @@ namespace PersistentLayer.Raven.Impl
         /// 
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
-        /// <param name="indexName"></param>
-        /// <param name="isMapReduce"></param>
+        /// <param name="indexParameter"></param>
         /// <returns></returns>
-        public IEnumerable<TEntity> FindAll<TEntity>(string indexName, bool isMapReduce) where TEntity : class, TRootEntity
+        public IEnumerable<TEntity> FindAll<TEntity>(IndexParameter indexParameter)
+            where TEntity : class, TRootEntity
         {
             try
             {
                 RavenQueryStatistics stats;
-                return this.Session.Query<TEntity>(indexName, isMapReduce)
+                return this.MakeQuery<TEntity>(indexParameter)
                            .Statistics(out stats)
+                    //.Customize(x => x.WaitForNonStaleResults(TimeSpan.FromSeconds(10)))
                            .ToList();
             }
             catch (Exception ex)
@@ -269,16 +276,16 @@ namespace PersistentLayer.Raven.Impl
         /// 
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
-        /// <param name="indexName"></param>
-        /// <param name="isMapReduce"></param>
+        /// <param name="indexParameter"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public IEnumerable<TEntity> FindAll<TEntity>(string indexName, bool isMapReduce, Expression<Func<TEntity, bool>> predicate) where TEntity : class, TRootEntity
+        public IEnumerable<TEntity> FindAll<TEntity>(IndexParameter indexParameter, Expression<Func<TEntity, bool>> predicate)
+            where TEntity : class, TRootEntity
         {
             try
             {
                 RavenQueryStatistics stats;
-                return this.Session.Query<TEntity>(indexName, isMapReduce)
+                return this.MakeQuery<TEntity>(indexParameter)
                            .Statistics(out stats)
                            .Where(predicate)
                            .ToList();
@@ -295,7 +302,8 @@ namespace PersistentLayer.Raven.Impl
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="identifiers"></param>
         /// <returns></returns>
-        public IEnumerable<TEntity> FindAll<TEntity>(IEnumerable<object> identifiers) where TEntity : class, TRootEntity
+        public IEnumerable<TEntity> FindAll<TEntity>(IEnumerable<object> identifiers)
+            where TEntity : class, TRootEntity
         {
             try
             {
@@ -320,19 +328,39 @@ namespace PersistentLayer.Raven.Impl
         public TResult ExecuteExpression<TEntity, TResult>(Expression<Func<IQueryable<TEntity>, TResult>> queryExpr)
             where TEntity : class, TRootEntity
         {
-            var ret = queryExpr.Compile()
-                            .Invoke(this.Session.Query<TEntity>());
-
-            Type resultType = typeof(TResult);
-            if (resultType.Implements(typeof(IQueryable<>)) && resultType.IsGenericType)
-            {
-                var dyn = Enumerable.ToList(ret as dynamic);
-                var rr = Queryable.AsQueryable(dyn);
-                return rr;
-            }
-            return ret;
+            return this.ExecuteExpression(null, queryExpr);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="indexParameter"></param>
+        /// <param name="queryExpr"></param>
+        /// <returns></returns>
+        public TResult ExecuteExpression<TEntity, TResult>(IndexParameter indexParameter, Expression<Func<IQueryable<TEntity>, TResult>> queryExpr)
+            where TEntity : class, TRootEntity
+        {
+            try
+            {
+                var ret = queryExpr.Compile()
+                            .Invoke(this.MakeQuery<TEntity>());
+
+                Type resultType = typeof(TResult);
+                if (resultType.Implements(typeof(IQueryable<>)) && resultType.IsGenericType)
+                {
+                    var dynamicList = Enumerable.ToList(ret as dynamic);
+                    var dynamicIQueryable = Queryable.AsQueryable(dynamicList);
+                    return dynamicIQueryable;
+                }
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                throw new ExecutionQueryException("Error on executing the given expression, see inner exception for details.", MakeNamingMethod<TEntity>("ExecuteExpression"), ex);
+            }
+        }
 
         /// <summary>
         /// 
@@ -341,7 +369,8 @@ namespace PersistentLayer.Raven.Impl
         /// <typeparam name="TKey"></typeparam>
         /// <param name="identifiers"></param>
         /// <returns></returns>
-        private IEnumerable<TEntity> LoadDocuments<TEntity, TKey>(IEnumerable<TKey> identifiers) where TEntity : class, TRootEntity
+        private IEnumerable<TEntity> LoadDocuments<TEntity, TKey>(IEnumerable<TKey> identifiers)
+            where TEntity : class, TRootEntity
         {
             Type keyType = typeof (TKey);
 
@@ -372,7 +401,7 @@ namespace PersistentLayer.Raven.Impl
         /// <param name="entity"></param>
         /// <param name="useIdentity"></param>
         /// <returns></returns>
-        public dynamic MakePersistent(dynamic entity, bool useIdentity)
+        public TEntity MakePersistent<TEntity>(TEntity entity, bool useIdentity)
         {
             try
             {
@@ -396,27 +425,13 @@ namespace PersistentLayer.Raven.Impl
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        private dynamic MakePersistentUsingIdentity(dynamic entity)
+        private void MakePersistentUsingIdentity(object entity)
         {
             string key = this.storeInfo.MakeDocumentKey(string.Empty, entity.GetType());
             this.Session.Store(entity, key);
-
-            //this.Session.Advanced.Evict();
-            //this.Session.Advanced.Clear();
-
-            return entity;
         }
-
-        
-        //private dynamic MakePersistentUsingIdentity(object entity, RavenEtag etag)
-        //{
-        //    string key = this.storeInfo.MakeDocumentKey(string.Empty, entity.GetType());
-        //    this.Session.Store(entity, etag.Etag, key);
-        //    return entity;
-        //}
 
         /// <summary>
         /// 
@@ -424,7 +439,8 @@ namespace PersistentLayer.Raven.Impl
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public TEntity MakePersistent<TEntity>(TEntity entity) where TEntity : class, TRootEntity
+        public TEntity MakePersistent<TEntity>(TEntity entity)
+            where TEntity : class, TRootEntity
         {
             try
             {
@@ -444,7 +460,8 @@ namespace PersistentLayer.Raven.Impl
         /// <param name="entity"></param>
         /// <param name="etag"></param>
         /// <returns></returns>
-        public TEntity MakePersistent<TEntity>(TEntity entity, RavenEtag etag) where TEntity : class, TRootEntity
+        public TEntity MakePersistent<TEntity>(TEntity entity, RavenEtag etag)
+            where TEntity : class, TRootEntity
         {
             try
             {
@@ -464,7 +481,8 @@ namespace PersistentLayer.Raven.Impl
         /// <param name="entity"></param>
         /// <param name="identifier"></param>
         /// <returns></returns>
-        public TEntity MakePersistent<TEntity>(TEntity entity, object identifier) where TEntity : class, TRootEntity
+        public TEntity MakePersistent<TEntity>(TEntity entity, object identifier)
+            where TEntity : class, TRootEntity
         {
             try
             {
@@ -486,7 +504,8 @@ namespace PersistentLayer.Raven.Impl
         /// <param name="identifier"></param>
         /// <param name="etag"></param>
         /// <returns></returns>
-        public TEntity MakePersistent<TEntity>(TEntity entity, object identifier, RavenEtag etag) where TEntity : class, TRootEntity
+        public TEntity MakePersistent<TEntity>(TEntity entity, object identifier, RavenEtag etag)
+            where TEntity : class, TRootEntity
         {
             try
             {
@@ -506,7 +525,8 @@ namespace PersistentLayer.Raven.Impl
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public IEnumerable<TEntity> MakePersistent<TEntity>(IEnumerable<TEntity> entities) where TEntity : class, TRootEntity
+        public IEnumerable<TEntity> MakePersistent<TEntity>(IEnumerable<TEntity> entities)
+            where TEntity : class, TRootEntity
         {
             if (entities == null || !entities.Any())
                 return entities;
@@ -528,7 +548,8 @@ namespace PersistentLayer.Raven.Impl
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="entity"></param>
-        public void MakeTransient<TEntity>(TEntity entity) where TEntity : class, TRootEntity
+        public void MakeTransient<TEntity>(TEntity entity)
+            where TEntity : class, TRootEntity
         {
             try
             {
@@ -545,7 +566,8 @@ namespace PersistentLayer.Raven.Impl
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="entities"></param>
-        public void MakeTransient<TEntity>(IEnumerable<TEntity> entities) where TEntity : class, TRootEntity
+        public void MakeTransient<TEntity>(IEnumerable<TEntity> entities)
+            where TEntity : class, TRootEntity
         {
             try
             {
@@ -571,12 +593,13 @@ namespace PersistentLayer.Raven.Impl
         /// <param name="pageSize"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public IPagedResult<TEntity> GetPagedResult<TEntity>(int startIndex, int pageSize, Expression<Func<TEntity, bool>> predicate) where TEntity : class, TRootEntity
+        public IPagedResult<TEntity> GetPagedResult<TEntity>(int startIndex, int pageSize, Expression<Func<TEntity, bool>> predicate)
+            where TEntity : class, TRootEntity
         {
             try
             {
                 RavenQueryStatistics stats;
-                var result = this.Session.Query<TEntity>()
+                var result = this.MakeQuery<TEntity>()
                                  .Statistics(out stats)
                                  .Where(predicate)
                                  .Skip(startIndex)
@@ -589,6 +612,21 @@ namespace PersistentLayer.Raven.Impl
             {
                 throw new ExecutionQueryException("Error on executing the given instance", MakeNamingMethod<TEntity>("GetPagedResult"), ex);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="indexParameter"></param>
+        /// <returns></returns>
+        private IRavenQueryable<TEntity> MakeQuery<TEntity>(IndexParameter indexParameter = null)
+            where TEntity : class, TRootEntity
+        {
+            if (indexParameter == null)
+                return this.Session.Query<TEntity>();
+
+            return this.Session.Query<TEntity>(indexParameter.Name, indexParameter.IsMapReduce);
         }
 
         /// <summary>

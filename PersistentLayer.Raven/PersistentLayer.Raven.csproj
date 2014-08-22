@@ -43,10 +43,10 @@
       <HintPath>..\packages\PersistentLayer.5.3.4.12\lib\net40\PersistentLayer.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Abstractions">
-      <HintPath>..\packages\RavenDB.Client.2.5.2750\lib\net40\Raven.Abstractions.dll</HintPath>
+      <HintPath>..\packages\RavenDB.Client.2.5.2916\lib\net40\Raven.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Client.Lightweight">
-      <HintPath>..\packages\RavenDB.Client.2.5.2750\lib\net40\Raven.Client.Lightweight.dll</HintPath>
+      <HintPath>..\packages\RavenDB.Client.2.5.2916\lib\net40\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -63,10 +63,11 @@
     <Compile Include="Converters\NumericNullableConverter.cs" />
     <Compile Include="CustomExtensions.cs" />
     <Compile Include="Impl\DocumentStoreInfo.cs" />
-    <Compile Include="Impl\RavenRootEnterpriseDao.cs" />
+    <Compile Include="Impl\RavenRootEnterpriseDAO.cs" />
     <Compile Include="Impl\SessionCacheProvider.cs" />
     <Compile Include="Impl\SessionProvider.cs" />
     <Compile Include="Impl\SessionContextProvider.cs" />
+    <Compile Include="IndexParameter.cs" />
     <Compile Include="IRavenRootPagedDao.cs" />
     <Compile Include="IRavenPersisterDAO.cs" />
     <Compile Include="IRavenRootQueryableDAO.cs" />

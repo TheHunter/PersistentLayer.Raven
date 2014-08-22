@@ -18,7 +18,7 @@ namespace PersistentLayer.Raven
         /// <param name="entity"></param>
         /// <param name="useIdentity"></param>
         /// <returns></returns>
-        dynamic MakePersistent(dynamic entity, bool useIdentity);
+        TEntity MakePersistent<TEntity>(TEntity entity, bool useIdentity);
 
         /// <summary>
         /// /

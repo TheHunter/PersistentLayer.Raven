@@ -18,21 +18,19 @@ namespace PersistentLayer.Raven
         /// 
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
-        /// <param name="indexName"></param>
-        /// <param name="isMapReduce"></param>
+        /// <param name="indexParameter"></param>
         /// <returns></returns>
-        IEnumerable<TEntity> FindAll<TEntity>(string indexName, bool isMapReduce)
+        IEnumerable<TEntity> FindAll<TEntity>(IndexParameter indexParameter)
             where TEntity : class, TRootEntity;
 
         /// <summary>
         /// 
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
-        /// <param name="indexName"></param>
-        /// <param name="isMapReduce"></param>
+        /// <param name="indexParameter"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        IEnumerable<TEntity> FindAll<TEntity>(string indexName, bool isMapReduce, Expression<Func<TEntity, bool>> predicate)
+        IEnumerable<TEntity> FindAll<TEntity>(IndexParameter indexParameter, Expression<Func<TEntity, bool>> predicate)
             where TEntity : class, TRootEntity;
 
         /// <summary>
@@ -44,6 +42,15 @@ namespace PersistentLayer.Raven
         IEnumerable<TEntity> FindAll<TEntity>(IEnumerable<object> identifiers)
             where TEntity : class, TRootEntity;
 
-        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="indexParameter"></param>
+        /// <param name="queryExpr"></param>
+        /// <returns></returns>
+        TResult ExecuteExpression<TEntity, TResult>(IndexParameter indexParameter, Expression<Func<IQueryable<TEntity>, TResult>> queryExpr)
+            where TEntity : class, TRootEntity;
     }
 }

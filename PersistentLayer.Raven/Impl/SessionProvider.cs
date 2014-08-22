@@ -130,7 +130,7 @@ namespace PersistentLayer.Raven.Impl
                     {
                         throw new CommitFailedException(
                             string.Format(
-                                "Error when the current session tries to commit the current transaction (name: {0}).",
+                                "Error when the current session tried to commit the current transaction (name: {0}).",
                                 info.Name), "CommitTransaction", ex);
                     }
                     finally

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
+//using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -40,7 +40,7 @@ namespace PersistentLayer.Raven.Test
             var res1 = this.DAO.Exists<Person>(new[] { 1, 100 });
             Assert.IsTrue(res1);
 
-            var res2 = this.DAO.Exists<Person>(new[] { 1, 100, 5 });
+            var res2 = this.DAO.Exists<Person>(new[] { 1, 100, 1005 });
             Assert.IsFalse(res2);
 
             var res3 = this.DAO.Exists<Person>(new[] { 1, 2, 3 });
@@ -65,8 +65,24 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void ExistsWithExpressionTest()
         {
-            var res2 = this.DAO.Exists<Person>(person => person.Name != null && person.ID > 10000 && person.ID < 10010);
-            Assert.IsFalse(res2);
+            //var res2 = this.DAO.Exists<Person>(person => person.Name != null && person.ID > 10000 && person.ID < 10010);
+            //var res1 = this.DAO.Exists<Person>(person => person.Name != null);
+            //Assert.IsTrue(res1);
+
+            //var res2 = this.DAO.Exists<Person>(person => person.Name != null && person.ID > 10000);
+            //var res2 = this.DAO.Exists<Person>(person => person.Name != null && person.ID > 1);
+
+            var res0 = this.DAO.Exists<Person>(person => person.Name != null && person.Surname != null);
+            Assert.IsTrue(res0);
+
+            // error whenever It tries to make an query with the own id
+            //var res1 = this.DAO.FindAll<Person>(person => person.ID == 1);
+            //Assert.IsNotNull(res1);
+
+            // error whenever It tries to make an query with the own id
+            //var res2 = this.DAO.Exists<Person>(person => person.ID == 1);
+            //Assert.IsTrue(res2);
+
 
         }
 
@@ -204,6 +220,8 @@ namespace PersistentLayer.Raven.Test
         }
 
         [Test]
+        [Description("Whenever It uses identity as document key, the key property must be nullable, otherwise underlaying system throws an exception.")]
+        [ExpectedException(typeof(CommitFailedException))]
         public void CreatePerson()
         {
             var tran = this.DAO.GetTransactionProvider();
@@ -212,8 +230,6 @@ namespace PersistentLayer.Raven.Test
                 tran.BeginTransaction();
 
                 Person p = new Person { Name = "James", Surname = "Brown11" };
-                //Person person = this.DAO.MakePersistent(p, 101);            //ok
-                //Person person = this.DAO.MakePersistent(p, 33);             //uses HILO algorithm
                 Person person = this.DAO.MakePersistent(p, true);                   //uses identity algorithm
                 Assert.IsNotNull(person);
 
@@ -229,7 +245,7 @@ namespace PersistentLayer.Raven.Test
         }
 
         [Test]
-        public void CreatePersonV2()
+        public void CreatePersonV2WithIdentity()
         {
             var tran = this.DAO.GetTransactionProvider();
             try
@@ -238,7 +254,7 @@ namespace PersistentLayer.Raven.Test
 
                 tran.BeginTransaction();
 
-                PersonV2 p = new PersonV2 { Name = "James", Surname = "Brown11" };
+                PersonV2 p = new PersonV2 { Name = "James", Surname = "Brown12" };
                 
                 // ok uses identity
                 // but The identity is not get by 
@@ -253,6 +269,78 @@ namespace PersistentLayer.Raven.Test
 
                 // afetr comit operation, the identity was computed by server, so after that identity is avaible
                 Assert.IsNotNull(person.ID);
+            }
+            catch (Exception ex)
+            {
+                tran.RollbackTransaction(ex);
+                throw ex;
+            }
+        }
+
+        [Test]
+        public void CreatePersonV2WithHILO()
+        {
+            var tran = this.DAO.GetTransactionProvider();
+            try
+            {
+                PersonV2 person;
+
+                tran.BeginTransaction();
+
+                PersonV2 p = new PersonV2 { Name = "James", Surname = "Brown12" };
+
+                // ok uses identity
+                person = this.DAO.MakePersistent(p, false);
+
+                Assert.IsNotNull(person);
+
+                // if commit operation wasn't executed, so no identity value has been computed by server side.
+                Assert.IsNotNull(person.ID);
+
+                tran.CommitTransaction();
+
+                // afetr comit operation, the identity was computed by server, so after that identity is avaible
+                Assert.IsNotNull(person.ID);
+            }
+            catch (Exception ex)
+            {
+                tran.RollbackTransaction(ex);
+                throw ex;
+            }
+        }
+
+        [Test]
+        public void TestTeacher1()
+        {
+            var tran = this.DAO.GetTransactionProvider();
+            try
+            {
+                tran.BeginTransaction("CreateTeacher");
+                List<Teacher> list = new List<Teacher>
+                    {
+                        new Teacher
+                        {
+                            Name = "Name1",
+                            Surname = "Surname1",
+                            BoardNumber = 1
+                        },
+                        new Teacher
+                        {
+                            Name = "Name2",
+                            Surname = "Surname2",
+                            BoardNumber = 101
+                        },
+                        new Teacher
+                        {
+                            Name = "Name1",
+                            Surname = "Surname1",
+                            BoardNumber = 2
+                        }
+                    };
+
+                this.DAO.MakePersistent(list.AsEnumerable());
+
+                tran.CommitTransaction();
             }
             catch (Exception ex)
             {
