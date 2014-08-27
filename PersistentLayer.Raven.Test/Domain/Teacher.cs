@@ -15,4 +15,15 @@ namespace PersistentLayer.Raven.Test.Domain
 
         public int BoardNumber { get; set; }
     }
+
+    public class TeacherV2
+    {
+        public int? Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string Surname { get; set; }
+
+        public int BoardNumber { get; set; }
+    }
 }

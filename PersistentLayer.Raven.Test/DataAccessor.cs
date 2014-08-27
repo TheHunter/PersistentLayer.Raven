@@ -44,10 +44,11 @@ namespace PersistentLayer.Raven.Test
                 Url = "https://kiwi.ravenhq.com/databases/TheHunter-salesarea",
                 ApiKey = "8a780943-6aca-484a-9f30-6004b00836ac"
             };
-            storeCached.Initialize();
-
+            
             //storeCached.Conventions.FindIdentityPropertyNameFromEntityName = FindIdentityPropertyNameFromEntityName;
             storeCached.Conventions.FindIdentityProperty = info => IsKeyPropertyinfo(info);
+
+            storeCached.Initialize();
 
             storeCached.Conventions.DefaultQueryingConsistency = ConsistencyOptions.AlwaysWaitForNonStaleResultsAsOfLastWrite;
             storeCached.Conventions.IdentityTypeConvertors.Add(new NumericNullableConverter<int>());
@@ -82,7 +83,7 @@ namespace PersistentLayer.Raven.Test
             //    serializer => serializer.TypeNameHandling = TypeNameHandling.All;
 
             //storeCached.Conventions.RegisterIdConvention<Person>(Func);
-            storeCached.Initialize();
+            //storeCached.Initialize();
             sessionProvider = new SessionContextProvider(() => storeCached.OpenSession());
 
             docStoreInfo = new DocumentStoreInfo(storeCached);

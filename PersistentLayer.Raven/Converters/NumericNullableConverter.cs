@@ -45,14 +45,15 @@ namespace PersistentLayer.Raven.Converters
         /// <returns></returns>
         public string ConvertFrom(string tag, object value, bool allowNull)
         {
-            if (value == null || this.type != value.GetType())
+            if (value == null)
                 return null;
 
-            dynamic res = value;
-            if (res.HasValue)
-                return tag + res.Value.ToString();
+            Type valType = value.GetType();
 
-            return tag;
+            if (!this.type.IsAssignableFrom(valType) || default(TValue).Equals(value))
+                return null;
+
+            return tag + value;
         }
 
         /// <summary>
