@@ -51,7 +51,8 @@ namespace PersistentLayer.Raven.Converters
             Type valType = value.GetType();
 
             if (!this.type.IsAssignableFrom(valType) || default(TValue).Equals(value))
-                return null;
+                //return null;
+                return tag;
 
             return tag + value;
         }
@@ -63,6 +64,9 @@ namespace PersistentLayer.Raven.Converters
         /// <returns></returns>
         public object ConvertTo(string value)
         {
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
+
             try
             {
                 return Convert.ChangeType(value, typeof(TValue));
