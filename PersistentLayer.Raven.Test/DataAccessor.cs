@@ -95,10 +95,6 @@ namespace PersistentLayer.Raven.Test
             return info.Name == "Key" || info.Name == "ID" || info.Name == "Id";
         }
 
-        private void AddNewFeaturesOnDocumentStore(DocumentStore storeCached)
-        {
-            
-        }
 
         [TestFixtureSetUp]
         protected void OnStartUp()
@@ -115,18 +111,13 @@ namespace PersistentLayer.Raven.Test
         [SetUp]
         protected void BindSession()
         {
-            //sessionContext.Bind(storeCached.OpenSession());
+            
         }
 
         [TearDown]
         public void UnBindSession()
         {
-            //var session = sessionContext.UnBind();
-            //if (session != null)
-            //{
-            //    // What happens when a Dispose method is called twice ??
-            //    session.Dispose();
-            //}
+            
         }
 
         /// <summary>

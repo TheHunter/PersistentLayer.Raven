@@ -42,7 +42,7 @@ namespace PersistentLayer.Raven.Impl
         }
 
         /// <summary>
-        /// Gets the current session binded.
+        /// Gets the current session to query on ravendb.
         /// </summary>
         protected IDocumentSession Session
         {
@@ -52,6 +52,20 @@ namespace PersistentLayer.Raven.Impl
                            .GetCurrentSession();
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        public bool IsCached<TEntity>(object identifier)
+        {
+            string key = this.storeInfo
+                                 .MakeDocumentKey<TEntity>(this.storeInfo.GetIdentifier<TEntity>(identifier));
+            return this.Session.Advanced.IsLoaded(key);
+        }
+
 
         /// <summary>
         /// 

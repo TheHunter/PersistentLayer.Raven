@@ -51,7 +51,6 @@ namespace PersistentLayer.Raven.Converters
             Type valType = value.GetType();
 
             if (!this.type.IsAssignableFrom(valType) || default(TValue).Equals(value))
-                //return null;
                 return tag;
 
             return tag + value;

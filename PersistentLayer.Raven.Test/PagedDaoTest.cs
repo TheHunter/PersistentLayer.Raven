@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-//using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -12,6 +11,7 @@ using PersistentLayer.Exceptions;
 using PersistentLayer.Raven.Impl;
 using PersistentLayer.Raven.Test.Domain;
 using Raven.Abstractions.Data;
+using Raven.Client;
 using Raven.Client.Converters;
 using Raven.Client.Linq;
 
@@ -111,10 +111,10 @@ namespace PersistentLayer.Raven.Test
             Assert.IsNull(res);
 
             var res1 = this.DAO.FindBy<Student>("mykey");
-            Assert.IsNotNull(res1);
+            Assert.IsNull(res1);
 
             var res2 = this.DAO.Exists<Student>(student => student.Key == "mykey");
-            Assert.IsTrue(res2);
+            Assert.IsFalse(res2);
         }
 
         [Test]
@@ -147,50 +147,25 @@ namespace PersistentLayer.Raven.Test
         }
 
         [Test]
-        public void TestMetadata()
-        {
-            //var session = this.Accessor.Session;
-            
-            ////var metadata = session.Advanced.GetMetadataFor(new Person(1){ Name = "Manu", Surname = "lur" });
-            ////var id = session.Advanced.StoreIdentifier;
-            //Type type = typeof (Person);
-            ////type = typeof (Student);
-
-            //Dictionary<string, string> conventions = new Dictionary<string, string>();
-            //conventions.Add("GetTypeTagName(typeof (Person)", this.DocStore.Conventions.GetTypeTagName(type));
-            //conventions.Add("GetClrTypeName(typeof (Person)", this.DocStore.Conventions.GetClrTypeName(type));
-            //conventions.Add("GetIdentityProperty(typeof(Person)).Name", this.DocStore.Conventions.GetIdentityProperty(type).Name);
-            //conventions.Add("IdentityPartsSeparator", this.DocStore.Conventions.IdentityPartsSeparator);
-            //conventions.Add("SaveEnumsAsIntegers", this.DocStore.Conventions.SaveEnumsAsIntegers.ToString());
-
-            //conventions.Add("FindTypeTagName.Invoke(type)", this.DocStore.Conventions.FindTypeTagName.Invoke(type));
-
-            //DocStore.Conventions.TransformTypeTagNameToDocumentKeyPrefix("People");
-            
-
-            //Assert.IsNotNull(conventions);
-        }
-
-        [Test]
         public void MakePersistentTest()
         {
-            Student st = new Student {Key = "mykey", Matricola = "121254842M"};
+            Student st = null;
             var tranProvider = this.DAO.GetTransactionProvider();
 
-            //try
-            //{
-            //    tranProvider.BeginTransaction();
-            //    st.Key = "mykey";
-            //    st.Matricola = "121254842M";
+            try
+            {
+                tranProvider.BeginTransaction();
 
-            //    this.DAO.MakePersistent<Student>(st);
-            //    tranProvider.CommitTransaction();
-            //}
-            //catch (Exception ex)
-            //{
-            //    tranProvider.RollbackTransaction(ex);
-            //    throw;
-            //}
+                st = new Student { Key = "mykey", Matricola = "121254842M" };
+
+                this.DAO.MakePersistent(st);
+                tranProvider.CommitTransaction();
+            }
+            catch (Exception ex)
+            {
+                tranProvider.RollbackTransaction(ex);
+                throw;
+            }
 
             var all = this.DAO.FindAll<Student>();
             Assert.IsNotNull(all);
@@ -202,26 +177,33 @@ namespace PersistentLayer.Raven.Test
         }
 
         [Test]
+        [ExpectedException(typeof(BusinessPersistentException))]
         public void TestCreatePerson2()
         {
-            Person p = new Person { Name = "James", Surname = "Brown6" };
+            var tranProvider = this.DAO.GetTransactionProvider();
+            try
+            {
+                tranProvider.BeginTransaction();
 
-            //var person = this.Accessor.MakePersistent(p, "100");      //error
-            //var person = this.Accessor.MakePersistent(p, "");         // la sequenza non contiene errori..
-            //var person = this.Accessor.MakePersistent(p, "/");       // la sequenza non contiene errori..
-            //var person = this.Accessor.MakePersistent(p, "people/");    // richiede un converter della stringa vuota..
-            //var person = this.DAO.MakePersistent<Person, string>(p, "people/201");     //ok, ID = 100
-            var person = this.DAO.MakePersistent(p, "210");     //ok, ID = 100
-            //var person = this.Accessor.MakePersistent(p, "anotherCls/101");     //ok, ID = 100
-            Assert.IsNotNull(person);
+                Person p = new Person { Name = "James", Surname = "Brown6" };
+                var person = this.DAO.MakePersistent(p, "210");
+                //Assert.IsNotNull(person);
 
-            var ret = this.DAO.FindBy<Person>("210");
-            Assert.IsNotNull(ret);
+                //var ret = this.DAO.FindBy<Person>("210");
+                //Assert.IsNotNull(ret);
+
+                tranProvider.CommitTransaction();
+            }
+            catch (Exception ex)
+            {
+                tranProvider.RollbackTransaction(ex);
+                throw;
+            }
         }
 
         [Test]
         [Description("Whenever It uses identity as document key, the key property must be nullable, otherwise underlaying system throws an exception.")]
-        [ExpectedException(typeof(CommitFailedException))]
+        //[ExpectedException(typeof(CommitFailedException))]
         public void CreatePerson()
         {
             var tran = this.DAO.GetTransactionProvider();
@@ -350,6 +332,19 @@ namespace PersistentLayer.Raven.Test
         }
 
         [Test]
+        public void TestTeachers()
+        {
+            //IEnumerable<Teacher> rr;
+            //rr = this.DAO.FindAll<Teacher>(teacher => teacher.BoardNumber >= 1 && teacher.BoardNumber <= 2);
+            //Assert.IsNotNull(rr);
+            //Assert.IsTrue(rr.Count() == 2);
+
+            //rr = this.DAO.FindAll<Teacher>(teacher => teacher.BoardNumber >= 2 && teacher.BoardNumber <= 13);
+            //Assert.IsNotNull(rr);
+            //Assert.IsTrue(rr.Count() == 3);
+        }
+
+        [Test]
         public void TestAllPersons()
         {
             dynamic a = 5L;
@@ -411,7 +406,7 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void TestExternalizeExpression()
         {
-            var customDAO = this.DAO as RavenRootEnterpriseDAO<object>;
+            var customDAO = this.DAO;
             if (customDAO == null)
                 Assert.IsTrue(false, "No DAO is avaible..");
 
@@ -429,7 +424,7 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void TestExternalizeExpressionWithProjection()
         {
-            var customDAO = this.DAO as RavenRootEnterpriseDAO<object>;
+            var customDAO = this.DAO;
             if (customDAO == null)
                 Assert.IsTrue(false, "No DAO is avaible..");
 
@@ -447,7 +442,7 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void TestExternalizeExpressionWithAnonymusType()
         {
-            var customDAO = this.DAO as RavenRootEnterpriseDAO<object>;
+            var customDAO = this.DAO;
             if (customDAO == null)
                 Assert.IsTrue(false, "No DAO is avaible..");
 
@@ -469,7 +464,7 @@ namespace PersistentLayer.Raven.Test
         [Test]
         public void TestExternalizeExpression2()
         {
-            var customDAO = this.DAO as RavenRootEnterpriseDAO<object>;
+            var customDAO = this.DAO;
             if (customDAO == null)
                 Assert.IsTrue(false, "No DAO is avaible..");
 
@@ -494,41 +489,50 @@ namespace PersistentLayer.Raven.Test
         }
 
         [Test]
-        public void Test()
+        public void Test1()
         {
-            //double aa = 4.5f;
-            Assert.IsTrue(typeof(bool?).IsAssignableFrom(typeof(bool)));
-            Assert.IsTrue(typeof(byte?).IsAssignableFrom(typeof(byte)));
-            Assert.IsTrue(typeof(int?).IsAssignableFrom(typeof(int)));
-            Assert.IsTrue(typeof(long?).IsAssignableFrom(typeof(long)));
-            Assert.IsTrue(typeof(float?).IsAssignableFrom(typeof(float)));
-            Assert.IsTrue(typeof(double?).IsAssignableFrom(typeof(double)));
-            Assert.IsTrue(typeof(decimal?).IsAssignableFrom(typeof(decimal)));
+            var customDAO = this.DAO;
+            var qq = customDAO.MakeLuceneQuery<Person>();
+            //var r = qq.WhereBetweenOrEqual("Id", "people/1", "people/2").ToList();
+            //r = qq.WhereBetween("Id", "people/1", "people/2").ToList();
+            var r = qq.WhereGreaterThan("Id", "people/1").ToList();
+            
 
-            Assert.IsFalse(typeof(int?).IsAssignableFrom(typeof(byte)));
-            Assert.IsFalse(typeof(long?).IsAssignableFrom(typeof(byte)));
-            Assert.IsFalse(typeof(long?).IsAssignableFrom(typeof(int)));
-
-            Assert.IsFalse(typeof(byte).IsAssignableFrom(typeof(byte?)));
+            //Assert.AreEqual(r.Count, 2);
+            Console.WriteLine(r.Count);
         }
 
         [Test]
         public void Test2()
         {
-            var t = typeof (string[]);
-            Assert.IsTrue(t.IsArray);
+            var customDAO = this.DAO;
+            var res = customDAO.FindAll<Teacher>(teacher => teacher.BoardNumber > 1 && teacher.BoardNumber < 3);
 
-            var j = typeof (List<string>);
-            Assert.IsTrue(j.IsClass && j.Implements(typeof(IEnumerable<string>)));
+            Assert.IsTrue(res != null);
+            Assert.AreEqual(res.Count(), 4);
 
-            Assert.IsTrue(j.Implements(typeof(IEnumerable)));
-            Assert.IsTrue(j.Implements(typeof(IEnumerable<>)));
+            foreach (var teacher in res)
+            {
+                Assert.IsTrue(customDAO.IsCached<Teacher>(teacher.Id));
+            }
 
-            Assert.IsFalse(j.Implements(typeof(List<string>)));
-
-
-            MethodInfo method = typeof (Enumerable).GetMethod("ToList");
-            Assert.IsNotNull(method);
+            Assert.IsFalse(customDAO.IsCached<Teacher>(5));
         }
+
+        [Test]
+        public void Test3()
+        {
+            var customDAO = this.DAO;
+            var index = new IndexParameter("Teachers/TeachersById");
+
+            var res = customDAO.FindAll<Teacher>(index, teacher => teacher.Id > 1 && teacher.Id < 3);
+            Assert.IsNotNull(res);
+            Console.WriteLine(res);
+        }
+
+
     }
+
+
+    
 }
